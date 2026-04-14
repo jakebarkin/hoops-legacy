@@ -523,6 +523,70 @@ body[data-theme='dark'] .round64-board .round64-region-title{color:#162945 !impo
   .bracket-col{min-width:122px}
   .live-score-val{font-size:2rem}
 }
+@media(max-width:760px){
+  .topbar{align-items:flex-start;gap:.55rem}
+  .tb-nil{margin-left:0;order:10;width:100%;text-align:center}
+  .nav-bar{padding:0 .35rem}
+  .nt{padding:.58rem .72rem;font-size:.75rem}
+  .team-grid{grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:.5rem}
+  .t-card{padding:.72rem}
+  .home-hero{padding:1.25rem}
+  .home-hero h2{font-size:1.35rem}
+  .home-callout{padding:1rem}
+  .home-callout h3{font-size:1.7rem}
+  .rb-grid{overflow-x:auto}
+  .rb-hdr,.rb-row{min-width:700px}
+  .modal{padding:1rem;max-height:96vh}
+  .live-overlay{padding:.5rem}
+  .live-hdr{padding:.8rem .9rem}
+  .live-feed{max-height:200px;padding:.65rem .75rem}
+  .live-footer{padding:.6rem .75rem;flex-wrap:wrap}
+  .prof-header{flex-wrap:wrap;align-items:flex-start}
+  .prof-ovr{margin-left:0}
+  .stat-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:560px){
+  #home-right-content{height:auto !important}
+  .home-shell{padding:.7rem;border-radius:16px}
+  .home-banner,.home-feat,.home-stats-grid{grid-template-columns:1fr}
+  .home-quickgrid{grid-template-columns:1fr}
+  .home-left,.splash-left{padding:1.1rem .95rem}
+  .home-right,.splash-right,.content{padding:.7rem}
+  .splash-title{font-size:1.3rem}
+  .team-grid{grid-template-columns:1fr 1fr}
+  .t-card .tc-name{font-size:.82rem}
+  .tb-name{font-size:1rem;letter-spacing:1px}
+  .tb-rec,.tb-tag{font-size:.62rem}
+  .tb-home-btn{padding:.2rem .5rem}
+  .brow .btn{flex:1 1 140px;text-align:center}
+  .prof-name{font-size:1.1rem}
+  .prof-meta{font-size:.68rem}
+  .tbl{font-size:.72rem}
+  .tbl th,.tbl td{padding:.34rem .45rem}
+  .game-row{padding:.48rem .6rem;gap:.5rem}
+  .matchup{max-width:154px}
+  .bracket-col{min-width:112px}
+  .mu-t,.mu-score{font-size:.62rem}
+  .live-box{width:100%;border-radius:12px}
+  .live-team-name{font-size:.62rem}
+  .live-score-val{font-size:1.8rem}
+  .live-clock{font-size:.84rem;min-width:4.2rem;padding:.2rem .55rem}
+  .modal-title{font-size:1.1rem}
+  .toast-wrap{left:.65rem;right:.65rem;bottom:.65rem;max-width:none}
+}
+@media(max-width:420px){
+  .team-grid{grid-template-columns:1fr}
+  .g2,.g3,.g4,.g5,.stat-grid,.home-stats-grid,.home-feat,.home-quickgrid{grid-template-columns:1fr}
+  .topbar{padding:.55rem .65rem}
+  .tb-badge{width:30px;height:30px;font-size:.62rem}
+  .tb-name{font-size:.92rem}
+  .nav-bar{padding:0 .2rem}
+  .nt{padding:.55rem .58rem;font-size:.68rem}
+  .matchup{max-width:146px}
+  .bracket-col{min-width:104px}
+  .live-hdr{padding:.7rem}
+  .live-feed{max-height:170px}
+}
 </style>
 </head>
 <body data-theme="light">

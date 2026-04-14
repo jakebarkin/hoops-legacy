@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- © 2026 Jake Barkin. All rights reserved. -->
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Hoops Legacy</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23d97706'/%3E%3Cpath d='M32 4c0 18-14 12-14 28s14 10 14 28M32 4c0 18 14 12 14 28S32 42 32 60M4 32h56M12 16c16 8 24 24 40 32M12 48c16-8 24-24 40-32' stroke='%23211a15' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"/>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -50,7 +53,7 @@ body[data-theme='dark']{
 ════════════════════════════ */
 .home-left{background:var(--navy);color:#fff;padding:2rem 1.75rem;display:flex;flex-direction:column;min-height:100vh}
 .home-logo-wrap{margin-bottom:1.75rem}
-.hl-main{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.6rem;letter-spacing:5px;line-height:.95;color:#fff}
+.hl-main{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.45rem;letter-spacing:3.5px;line-height:1;color:#fff}
 .hl-main .accent{color:var(--gold3)}
 .hl-sub{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:6px;color:rgba(255,255,255,.35);text-transform:uppercase;margin-top:.3rem}
 .home-saves-label{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:3px;color:rgba(255,255,255,.35);text-transform:uppercase;margin-bottom:.65rem}
@@ -160,6 +163,9 @@ body[data-theme='dark'] .tbl tr.toprow td{background:rgba(95,219,146,.08)}
 body[data-theme='dark'] .tbl tr.injrow td{background:rgba(240,162,87,.08)}
 body[data-theme='dark'] select,
 body[data-theme='dark'] option{background:#16203a;color:#f4f7ff;border-color:#40588a}
+body[data-theme='dark'] .coach-scheme-card{background:#16203a !important;color:#f4f7ff !important;border-color:#40588a !important}
+body[data-theme='dark'] .coach-scheme-card strong,
+body[data-theme='dark'] .coach-scheme-card div{color:#f4f7ff !important}
 body[data-theme='dark'] .oelite{background:rgba(255,213,105,.22);color:#ffe8a6;border-color:rgba(255,213,105,.34)}
 body[data-theme='dark'] .ohigh{background:rgba(118,172,255,.2);color:#dbe7ff;border-color:rgba(118,172,255,.34)}
 body[data-theme='dark'] .omid{background:#253353;color:#eef3ff;border-color:#40588a}
@@ -660,7 +666,7 @@ const CONFS={
   'A-10':['Dayton','VCU','Saint Louis','George Mason','Rhode Island','La Salle','Fordham','George Washington','Davidson','Duquesne'],
 };
 const CONF_DISPLAY_NAMES={
-  'ACC':'Atlantic Coast Conference',
+  'ACC':'Coastal Crown Conference',
   'Big Ten':'Great Lakes Conference',
   'Big 12':'Heartland Conference',
   'SEC':'Southeast Conference',
@@ -704,8 +710,8 @@ const TEAM_DISPLAY_NAMES={
   'Stanford':'Palo Alto',
   'California':'Berkeley',
   'SMU':'Dallas Methodist',
-  'Michigan State':'East Lansing State',
-  'Purdue':'West Lafayette',
+  'Michigan State':'East Lansing',
+  'Purdue':'West Lafayette Tech',
   'Indiana':'Bloomington',
   'Michigan':'Ann Arbor',
   'Wisconsin':'Madison',
@@ -755,8 +761,8 @@ const TEAM_DISPLAY_NAMES={
   'Texas':'Austin',
   'Oklahoma':'Norman',
   'Marquette':'Milwaukee',
-  'Connecticut':'Storrs State',
-  'Villanova':'Villanova Main',
+  'Connecticut':'Storrs',
+  'Villanova':'Main Line',
   'Creighton':'Omaha',
   "St. John's":'Queens',
   'Xavier':'Cincinnati Jesuit',
@@ -765,7 +771,7 @@ const TEAM_DISPLAY_NAMES={
   'DePaul':'Lincoln Park',
   'Seton Hall':'South Orange',
   'Butler':'Indianapolis',
-  'Memphis':'Memphis Metro',
+  'Memphis':'Bluff City',
   'Wichita State':'Wichita',
   'Temple':'North Philly',
   'Tulsa':'Green Country',
@@ -797,7 +803,8 @@ const TEAM_DISPLAY_NAMES={
   'Davidson':'Lake Norman',
   'Duquesne':'Steel City'
 };
-const teamLabel=t=>(BRANDING_PACK?.teamNames?.[t])||TEAM_DISPLAY_NAMES[t]||t||'';
+const teamLabelForState=(team,state)=>(state?.customTeamNames?.[team])||TEAM_DISPLAY_NAMES[team]||team||'';
+const teamLabel=t=>((typeof G!=='undefined'&&G?.customTeamNames?.[t])||(BRANDING_PACK?.teamNames?.[t])||TEAM_DISPLAY_NAMES[t]||t||'');
 
 const PRES_MAP={
   'Duke':5,'North Carolina':5,'Kansas':5,'Kentucky':5,'UCLA':4,'Arizona':4,
@@ -824,7 +831,7 @@ const TCOLS={
   'Florida':['#0021A5','#FA4616'],'Auburn':['#03244D','#E87722'],'Wisconsin':['#C5050C','#fff'],
   'Illinois':['#E84A27','#13294B'],'Iowa':['#FFCD00','#000'],'Maryland':['#E03A3E','#FFD520'],
   'Oregon':['#154733','#FEE123'],'Washington':['#4B2E83','#B7A57A'],'Stanford':['#8C1515','#fff'],
-  'Houston':['#C8102E','#63666A'],'San Diego State':['#A6192E','#fff'],'Dayton':['#C8102E','#fff'],
+  'Houston':['#C8102E','#F4F7FF'],'San Diego State':['#A6192E','#fff'],'Dayton':['#C8102E','#fff'],
   'VCU':['#FFB300','#000'],'Marquette':['#003366','#FFCC00'],'Georgetown':['#041E42','#75B2DD'],
   'Creighton':['#005CA9','#fff'],"St. John's":['#CC0000','#fff'],'Notre Dame':['#0C2340','#C99700'],
   'NC State':['#CC0000','#fff'],'Miami':['#F47321','#005030'],'Louisville':['#AD0000','#fff'],
@@ -855,8 +862,8 @@ const tcTx=t=>((BRANDING_PACK?.teamColors?.[t])||(TCOLS[t])||['#243058','#fff'])
 const abbr=t=>(t||'').split(' ').map(w=>w[0]).join('').substring(0,3).toUpperCase();
 const teamLogoText=t=>(BRANDING_PACK?.teamLogos?.[t])||abbr(teamLabel(t));
 
-const FIRST=['Marcus','Jalen','Tyrese','Isaiah','Jaylen','Devin','Jordan','Cameron','Tyler','Nathan','DeAndre','Chris','Kevin','James','Malik','Andre','Tre','Trae','Miles','Anthony','Scottie','Franz','Cole','Cade','Evan','Josh','Darius','Keion','Bryce','Elijah','Xavier','Jayson','Donovan','Brandon','Jarrett','Davion','Hunter','Remy','AJ','Zion','Luka','Ochai','TJ','DJ','RJ','Caleb','Drew','Blake','Jarace','Gradey'];
-const LAST=['Williams','Johnson','Davis','Brown','Thompson','Jackson','Anderson','Thomas','Robinson','Harris','Walker','Martin','White','Taylor','Moore','Jones','Clark','Lewis','Hill','Young','Allen','Wright','Scott','Baker','Green','Adams','Nelson','Carter','Mitchell','Perez','Roberts','Turner','Evans','Torres','Parker','Collins','Edwards','Stewart','Agbaji','Diallo','Nembhard','Mintz','McCullar','Wiggins','Porter','Love','Freeman','Douglas','Murray','Dick'];
+const FIRST=['Marcus','Jalen','Tyrese','Isaiah','Jaylen','Devin','Jordan','Cameron','Tyler','Nathan','DeAndre','Chris','Kevin','James','Malik','Andre','Tre','Miles','Anthony','Scott','Cole','Evan','Josh','Darius','Bryce','Elijah','Xavier','Jayson','Donovan','Brandon','Jarrett','Hunter','Malcolm','TJ','DJ','RJ','Caleb','Drew','Blake','Julian','Grant','Noah','Micah','Terrence','Kendall','Desmond','Raylen','Kobe','Mason','Landon'];
+const LAST=['Williams','Johnson','Davis','Brown','Thompson','Jackson','Anderson','Thomas','Robinson','Harris','Walker','Martin','White','Taylor','Moore','Jones','Clark','Lewis','Hill','Young','Allen','Wright','Scott','Baker','Green','Adams','Nelson','Carter','Mitchell','Perez','Roberts','Turner','Evans','Torres','Parker','Collins','Edwards','Stewart','Daniels','Bell','Howard','Barnes','Powell','Jenkins','Hughes','Foster','Brooks','Ward','Simmons','Hayes'];
 const POSITIONS=['PG','SG','SF','PF','C'];
 const TRAITS_POOL=['High Motor','3-Point Threat','Rim Protector','Playmaker','Athletic Freak','Clutch','Leadership','Defensive Anchor','Paint Beast','Shooter\'s Touch','Fast Hands','Floor General','Rebounding Machine','Versatile','Quick Release'];
 const rn=a=>a[Math.floor(Math.random()*a.length)];
@@ -923,7 +930,7 @@ function spreadText(spread,teamA,teamB){
   const fav=spread>=0?teamA:teamB;
   const dog=spread>=0?teamB:teamA;
   const val=Math.abs(spread).toFixed(1);
-  return `${fav} ${spread>=0?'-':'+'}${val} vs ${dog} ${spread>=0?'+':'-'}${val}`;
+  return `${teamLabel(fav)} ${spread>=0?'-':'+'}${val} vs ${teamLabel(dog)} ${spread>=0?'+':'-'}${val}`;
 }
 function assignRecruitRanks(pool){
   const ranked=[...pool].sort((a,b)=>b.ovr-a.ovr||b.stars-a.stars);
@@ -1072,6 +1079,9 @@ function normalizeGameState(state){
   merged.draftedPlayers=merged.draftedPlayers||[];
   merged.teamHistory=merged.teamHistory||{confChamps:0,natChamps:0,firstRounds:0,tourns:0};
   merged.portalLog=merged.portalLog||[];
+  merged.customTeamNames=merged.customTeamNames||{};
+  merged.customGeneratedPlayerNames=merged.customGeneratedPlayerNames||{};
+  merged.generatedTeamRosters=merged.generatedTeamRosters||{};
   merged.coachAccolades=Array.isArray(merged.coachAccolades)?merged.coachAccolades:[];
   merged.history=Array.isArray(merged.history)?merged.history:[];
   merged.news=Array.isArray(merged.news)?merged.news:[];
@@ -1163,6 +1173,7 @@ function saveGame(){
   const idx=saves.findIndex(s=>s.id===G.sid);
   const stateForSave=normalizeGameState(JSON.parse(JSON.stringify(G)));
   const snap={id:G.sid,team:G.team,conf:G.conf,dyYear:G.dyYear,year:G.year,diff:G.diff,
+    teamLabel:teamLabelForState(G.team,stateForSave),
     wins:G.wins,losses:G.losses,titles:G.history.filter(h=>h.isChamp).length,
     jobSecurity:G.jobSecurity||80,
     version:SAVE_VERSION,
@@ -1229,6 +1240,7 @@ function baseGameState(){
   // Team history & school metrics
   teamHistory:{confChamps:0,natChamps:0,firstRounds:0,tourns:0},
   jobSecurity:100, // 0-100
+  jobSecuritySeasonStart:100,
   contractYear:3,
   ap25:[],
   teamRatings:null,
@@ -1239,6 +1251,9 @@ function baseGameState(){
   selectionSundayDone:false,
   selectionSeedReveal:null,
   customNC:[],
+  customTeamNames:{},
+  customGeneratedPlayerNames:{},
+  generatedTeamRosters:{},
   scheduleNilAdj:0,
   retiredNumbers:[],
   // Per-team sim stats for standings
@@ -1301,13 +1316,26 @@ function setGeneratedRotation(roster){
   return ordered;
 }
 function genTeamRoster(team,count=10){
+  G.generatedTeamRosters=G.generatedTeamRosters||{};
   const base=getTeamRatingsFor(team).ovr;
   const yrs=['Sr','Jr','Jr','So','So','Fr','Sr','So','Fr','Jr'];
-  const roster=Array.from({length:count},(_,i)=>{
+  let roster=G.generatedTeamRosters[team];
+  if(!Array.isArray(roster)) roster=[];
+  while(roster.length<count){
+    const i=roster.length;
     const p=mkP(yrs[i%yrs.length],clamp(base+ri(-10,8),54,98),rname());
+    p.id=`gen_${team.replace(/\s+/g,'_')}_${i}`;
     p.team=team;
-    return p;
+    roster.push(p);
+  }
+  roster=roster.slice(0,count).map((p,i)=>{
+    const clone=ensureSeasonLog({...p});
+    clone.id=clone.id||`gen_${team.replace(/\s+/g,'_')}_${i}`;
+    clone.team=team;
+    clone.name=(G.customGeneratedPlayerNames&&G.customGeneratedPlayerNames[clone.id])||clone.name;
+    return clone;
   });
+  G.generatedTeamRosters[team]=roster;
   return setGeneratedRotation(roster);
 }
 
@@ -1500,6 +1528,8 @@ function advanceLeagueWeek(week){
 function startSeason(){
   G.wins=0;G.losses=0;G.cw=0;G.cl=0;
   G.phase='season';G.ctData=null;G.mmData=null;G.champ=null;G.awards=null;G.osDec=null;
+  G.jobSecuritySeasonStart=G.jobSecurity||80;
+  G.firedData=null;
   G.portalOpen=true; // remains open until first game
   G.news=[];
   if(!(Array.isArray(G.portal)&&G.portal.length)){
@@ -1637,6 +1667,7 @@ function simGame(idx,isTourney){
   if(gTotal===10) aiRecRound(.22);
   if(gTotal===18) aiRecRound(.30);
   refreshScheduleSpreads();
+  updateJobSecurity(false);
   updateTopBar();
   return g;
 }
@@ -1758,8 +1789,9 @@ function liveSim(schedIdx,tournCtx){
   g=simGame(schedIdx,false);
   const events=genLivePBP(g.myPts,g.oppPts,G.team,g.opp);
   postCb=()=>{
-    addNews((g.win?'✅ W ':'❌ L ')+g.myPts+'-'+g.oppPts+(g.otPeriods?' '+g.otLabel:'')+' vs '+g.opp,(g.win?'ng':'nr'));
-    toast((g.win?'W ':'L ')+g.myPts+'-'+g.oppPts+(g.otPeriods?' '+g.otLabel:'')+' vs '+g.opp,g.win?'tw':'tl');
+    addNews((g.win?'✅ W ':'❌ L ')+g.myPts+'-'+g.oppPts+(g.otPeriods?' '+g.otLabel:'')+' vs '+teamLabel(g.opp),(g.win?'ng':'nr'));
+    toast((g.win?'W ':'L ')+g.myPts+'-'+g.oppPts+(g.otPeriods?' '+g.otLabel:'')+' vs '+teamLabel(g.opp),g.win?'tw':'tl');
+    if(checkMidseasonFiring()) return;
     if(G.schedule.every(x=>x.played)){G.phase='season-done';updateTopBar();}
     switchTab(G.tab||'schedule');
   };
@@ -1956,12 +1988,13 @@ function showLiveOverlay(events,myFinal,oppFinal,myT,oppT,onDone,myWin,liveBs,ho
   let interval=null;
   const speed=60; // ms between events when auto-running
   const myBg=tc(myT),oppBg=tc(oppT),homeBg=tc(homeTeam||myT);
+  const myName=teamLabel(myT),oppName=teamLabel(oppT);
 
   box.innerHTML=`
     <div class="live-hdr">
       <div class="live-teams">
         <div style="text-align:left">
-          <div class="live-team-name">${myT}</div>
+          <div class="live-team-name">${myName}</div>
           <div class="live-score-val" id="ls-my" style="color:${myWin?'#3dca74':'#f87070'}">0</div>
         </div>
         <div style="text-align:center">
@@ -1969,7 +2002,7 @@ function showLiveOverlay(events,myFinal,oppFinal,myT,oppT,onDone,myWin,liveBs,ho
           <div class="live-clock" id="ls-clk">20:00</div>
         </div>
         <div style="text-align:right">
-          <div class="live-team-name">${oppT}</div>
+          <div class="live-team-name">${oppName}</div>
           <div class="live-score-val" id="ls-opp" style="color:${!myWin?'#3dca74':'#f87070'}">0</div>
         </div>
       </div>
@@ -2074,7 +2107,7 @@ function showLiveOverlay(events,myFinal,oppFinal,myT,oppT,onDone,myWin,liveBs,ho
     document.getElementById('lq1').style.background='rgba(255,255,255,.4)';
     document.getElementById('lq2').style.background='rgba(255,255,255,.4)';
     const footer=document.querySelector('.live-footer');
-    footer.innerHTML=`<div style="font-family:\"Barlow Condensed\",sans-serif;font-size:.85rem;color:${myWin?'var(--green3)':'var(--red3)'}">FINAL: ${myT} ${myFinal} — ${oppT} ${oppFinal}</div>
+    footer.innerHTML=`<div style="font-family:\"Barlow Condensed\",sans-serif;font-size:.85rem;color:${myWin?'var(--green3)':'var(--red3)'}">FINAL: ${myName} ${myFinal} — ${oppName} ${oppFinal}</div>
       ${liveBs?`<button class="btn bb" onclick="openLiveBoxScore()">Box Score</button>`:''}
       <button class="btn bg" onclick="lsClose()">Close</button>`;
   }
@@ -2111,7 +2144,7 @@ function pitch(id){
     toast(r.name+' committed! Joins next season','to');
   } else if(int>=55&&Math.random()<.1){
     const rivals=Object.keys(r.interest).filter(t=>t!==G.team&&(r.interest[t]||0)>=int-12);
-    if(rivals.length){const rival=rn(rivals);r.committedTo=rival;G.aiCommits[rival]=G.aiCommits[rival]||[];G.aiCommits[rival].push(r.id);toast(r.name+' committed to '+rival,'tl');}
+    if(rivals.length){const rival=rn(rivals);r.committedTo=rival;G.aiCommits[rival]=G.aiCommits[rival]||[];G.aiCommits[rival].push(r.id);toast(r.name+' committed to '+teamLabel(rival),'tl');}
   }
   updateTopBar();
 }
@@ -2722,6 +2755,21 @@ function aiPortal(){
   });
 }
 window.openCustomSchedule=function(){
+  if((G.customNC||[]).length){
+    mOpen('Non-Conference Schedule Locked',`
+      <div style="font-size:.78rem;color:var(--tx2);margin-bottom:.7rem">Your custom non-conference slate is already finalized for this season.</div>
+      <div style="display:grid;gap:.4rem">
+        ${(G.customNC||[]).map((g,i)=>`<div class="card2" style="padding:.55rem;display:flex;align-items:center;gap:.55rem">
+          ${teamLogoBadge(g.opp,26)}
+          <div style="flex:1">
+            <div style="font-size:.78rem;font-weight:800;color:var(--navy)">Week ${[1,3,5][i]||'—'} · ${teamLabel(g.opp)}</div>
+            <div style="font-size:.66rem;color:var(--tx3)">${(g.site||'home')==='neutral'?'Neutral':(g.site==='away'?'Away':'Home')}</div>
+          </div>
+        </div>`).join('')}
+      </div>
+    `);
+    return;
+  }
   const opts=ALL_TEAMS.filter(t=>t!==G.team&&!CONFS[G.conf].includes(t));
   const picks=(G.customNC||[]).slice(0,3);
   const usedLastYear=new Set((G.history||[]).slice(-1)[0]?.customNCOpps||[]);
@@ -2746,7 +2794,7 @@ window.openCustomSchedule=function(){
         <div style="display:flex;gap:.45rem;flex-wrap:wrap">
           <select id="nc-opp-${i}" style="flex:1;min-width:200px;padding:.35rem;border:1px solid var(--br2);border-radius:6px">
             <option value="">Random Opponent</option>
-            ${opts.map(t=>`<option value="${t}" ${(picks[i]?.opp===t)?'selected':''} ${usedLastYear.has(t)?'disabled':''}>${t}${usedLastYear.has(t)?' (used last year)':''}</option>`).join('')}
+            ${opts.map(t=>`<option value="${t}" ${(picks[i]?.opp===t)?'selected':''} ${usedLastYear.has(t)?'disabled':''}>${teamLabel(t)}${usedLastYear.has(t)?' (used last year)':''}</option>`).join('')}
           </select>
           <select id="nc-home-${i}" style="padding:.35rem;border:1px solid var(--br2);border-radius:6px">
             <option value="home" ${(picks[i]?.site||['home','away','neutral'][i])==='home'?'selected':''}>Home</option>
@@ -2760,6 +2808,7 @@ window.openCustomSchedule=function(){
   `);
 };
 window.autoPickCustomSchedule=function(){
+  if((G.customNC||[]).length){toast('This schedule is already finalized for the season','tl');return;}
   const opts=ALL_TEAMS.filter(t=>t!==G.team&&!CONFS[G.conf].includes(t));
   const usedLastYear=new Set((G.history||[]).slice(-1)[0]?.customNCOpps||[]);
   const pool=shuffle(opts.filter(t=>!usedLastYear.has(t))).slice(0,3);
@@ -2772,6 +2821,7 @@ window.autoPickCustomSchedule=function(){
 };
 window.saveCustomSchedule=function(){
   if(G.wins+G.losses>0){toast('Custom scheduling closes after your first game','tl');return;}
+  if((G.customNC||[]).length){toast('This schedule is already finalized for the season','tl');return;}
   const picks=[0,1,2].map(i=>({opp:document.getElementById(`nc-opp-${i}`).value,site:document.getElementById(`nc-home-${i}`).value||['home','away','neutral'][i]})).filter(p=>p.opp);
   const uniquePicks=picks.filter((p,i,arr)=>arr.findIndex(x=>x.opp===p.opp)===i).slice(0,3);
   const usedLastYear=new Set((G.history||[]).slice(-1)[0]?.customNCOpps||[]);
@@ -2779,6 +2829,7 @@ window.saveCustomSchedule=function(){
   G.customNC=uniquePicks;
   G.scheduleNilAdj=customScheduleImpact(uniquePicks);
   applyScheduleNilAdjustment();
+  updateTopBar();
   if(G.schedule?.length){
     buildSched();
     if(G.tab==='schedule') rSched();
@@ -2902,6 +2953,216 @@ window.setDifficulty=function(diff){
   toast('Difficulty set to '+diff.toUpperCase(),'to');
   if(G.tab==='settings') rSettings();
   saveGame();
+};
+function currentShareUrl(){
+  const href=(window.location&&window.location.href)||'';
+  return /^https?:/i.test(href)?href:'';
+}
+function shareSummary(kind='season'){
+  const team=teamLabel(G.team);
+  const record=`${G.wins||0}-${G.losses||0}`;
+  const titles=G.history.filter(h=>h.isChamp).length;
+  const seed=getNCAAEntry?.(G.team);
+  const champion=G.champ?teamLabel(G.champ):'';
+  const roundLabel=G.mmData?.done?'Champion':(G.mmData?.ready?'Bracket Ready':'Season In Progress');
+  const base={
+    season:`${team} is ${record} in Year ${G.dyYear} of my Hoops Legacy dynasty. ${titles?`I’ve won ${titles} national title${titles===1?'':'s'} so far.`:'Trying to build a title winner.'}`,
+    bracket:`${team}${seed?` is a No. ${seed.seed} seed in the ${seed.region} Region`:''} in my Hoops Legacy national tournament bracket. ${roundLabel}.`,
+    championship:`${champion||team} just won the national championship in Hoops Legacy.${champion&&champion!==team?` My program: ${team}.`:''}`,
+    team:`${team} | ${confLabel(G.conf)} | ${record} | Year ${G.dyYear} in Hoops Legacy.`,
+  }[kind]||`${team} in Hoops Legacy.`;
+  return {title:'Hoops Legacy',text:base,url:currentShareUrl()};
+}
+function shareCaption(kind='season'){
+  return document.getElementById(`share-caption-${kind}`)?.value?.trim()||shareSummary(kind).text;
+}
+function resolveShareTargetNode(kind='season'){
+  if(kind==='bracket') return document.querySelector('.bracket-wrap')||document.getElementById('content');
+  if(kind==='team') return document.getElementById('mbg')?.style.display==='flex'?document.getElementById('mbody'):document.getElementById('content');
+  if(kind==='roster') return document.querySelector('#content .tbl')||document.getElementById('content');
+  if(kind==='score') return document.querySelector('.live-wrap')||document.querySelector('#mbody .tbl')||document.getElementById('content');
+  return document.getElementById('content')||document.body;
+}
+function shareTargetNode(kind='season'){
+  return window._shareCaptureTarget||resolveShareTargetNode(kind);
+}
+function inlineCloneNode(node){
+  const clone=node.cloneNode(true);
+  const walk=(src,dst)=>{
+    if(src.nodeType!==1||dst.nodeType!==1) return;
+    const cs=getComputedStyle(src);
+    dst.style.cssText=Array.from(cs).map(prop=>`${prop}:${cs.getPropertyValue(prop)};`).join('');
+    if(dst instanceof HTMLTextAreaElement) dst.innerHTML=src.value;
+    if(dst instanceof HTMLInputElement) dst.setAttribute('value',src.value||'');
+    Array.from(src.childNodes).forEach((child,i)=>walk(child,dst.childNodes[i]));
+  };
+  walk(node,clone);
+  return clone;
+}
+async function captureShareBlob(kind='season'){
+  const node=shareTargetNode(kind);
+  if(!node) throw new Error('Nothing to capture');
+  const rect=node.getBoundingClientRect();
+  const cloned=inlineCloneNode(node);
+  const wrap=document.createElement('div');
+  wrap.setAttribute('xmlns','http://www.w3.org/1999/xhtml');
+  wrap.style.background=getComputedStyle(document.body).backgroundColor||'#ffffff';
+  wrap.style.padding='16px';
+  wrap.style.width=`${Math.ceil(rect.width)}px`;
+  wrap.appendChild(cloned);
+  const markup=new XMLSerializer().serializeToString(wrap);
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${Math.ceil(rect.width)+32}" height="${Math.ceil(rect.height)+32}"><foreignObject width="100%" height="100%">${markup}</foreignObject></svg>`;
+  const url=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml;charset=utf-8'}));
+  try{
+    const img=new Image();
+    img.decoding='async';
+    const loaded=await new Promise((resolve,reject)=>{
+      img.onload=()=>resolve(true);
+      img.onerror=reject;
+      img.src=url;
+    });
+    if(!loaded) throw new Error('Image render failed');
+    const canvas=document.createElement('canvas');
+    canvas.width=Math.ceil(rect.width)+32;
+    canvas.height=Math.ceil(rect.height)+32;
+    const ctx=canvas.getContext('2d');
+    ctx.fillStyle=getComputedStyle(document.body).backgroundColor||'#ffffff';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.drawImage(img,0,0);
+    return await new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('PNG export failed')),'image/png'));
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+function downloadBlob(blob,filename){
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),500);
+}
+async function copyShareCaption(kind='season'){
+  const text=[shareCaption(kind),currentShareUrl()].filter(Boolean).join(' ');
+  if(navigator.clipboard?.writeText){
+    await navigator.clipboard.writeText(text);
+    return true;
+  }
+  return false;
+}
+window.downloadBracketScreenshot=async function(){
+  try{
+    window._shareCaptureTarget=resolveShareTargetNode('bracket');
+    let blob=null;
+    if(window.html2canvas&&window._shareCaptureTarget){
+      const canvas=await window.html2canvas(window._shareCaptureTarget,{backgroundColor:getComputedStyle(document.body).backgroundColor||'#ffffff',scale:2,useCORS:true});
+      blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('PNG export failed')),'image/png'));
+    } else {
+      blob=await captureShareBlob('bracket');
+    }
+    downloadBlob(blob,'hoops-legacy-bracket.png');
+    toast('Bracket screenshot saved','to');
+  }catch(e){
+    toast('Could not create bracket screenshot','tl');
+  }finally{
+    window._shareCaptureTarget=null;
+  }
+};
+function updateNamesInCollection(list,id,newName){
+  let changed=false;
+  (list||[]).forEach(p=>{
+    if(p&&p.id===id){p.name=newName;changed=true;}
+  });
+  return changed;
+}
+window.renamePlayerEntity=function(id){
+  const generated=Object.values(G.generatedTeamRosters||{}).flat().find(p=>p.id===id);
+  const target=[...(G.roster||[]),...(G.portal||[]),...(G.pool||[]),...(G.pending||[]),...(G.osDec||[]),...(G.draftedPlayers||[]),...(generated?[generated]:[])].find(p=>p.id===id);
+  if(!target) return;
+  const next=prompt('Edit player name:',target.name||'');
+  if(!next||!next.trim()) return;
+  const newName=next.trim();
+  const oldName=target.name;
+  [G.roster,G.portal,G.pool,G.pending,G.osDec,G.draftedPlayers].forEach(list=>updateNamesInCollection(list,id,newName));
+  Object.values(G.generatedTeamRosters||{}).forEach(list=>updateNamesInCollection(list,id,newName));
+  G.customGeneratedPlayerNames=G.customGeneratedPlayerNames||{};
+  G.customGeneratedPlayerNames[id]=newName;
+  (G.portalLog||[]).forEach(m=>{ if(m.name===oldName) m.name=newName; });
+  const patchAwardNames=val=>{
+    if(Array.isArray(val)) val.forEach(p=>{ if(p&&p.name===oldName) p.name=newName; });
+    else if(val&&typeof val==='object'&&val.name===oldName) val.name=newName;
+  };
+  if(G.awards) Object.values(G.awards).forEach(patchAwardNames);
+  if(G.confAwards) Object.values(G.confAwards).forEach(patchAwardNames);
+  (G.news||[]).forEach(n=>{ if(typeof n.msg==='string') n.msg=n.msg.replaceAll(oldName,newName); });
+  saveGame();
+  updateTopBar();
+  toast('Player name updated','to');
+  if(document.getElementById('home')?.classList.contains('on')) renderHome();
+  if(G.tab==='roster') rRoster();
+  if(G.tab==='stats') rStats();
+  if(G.tab==='portal') rPortal();
+};
+window.renameTeamDisplay=function(team){
+  const current=(G.customTeamNames&&G.customTeamNames[team])||teamLabel(team);
+  const next=prompt('Edit team name:',current);
+  if(!next||!next.trim()) return;
+  G.customTeamNames=G.customTeamNames||{};
+  G.customTeamNames[team]=next.trim();
+  saveGame();
+  updateTopBar();
+  if(document.getElementById('home')?.classList.contains('on')) renderHome();
+  if(G.tab==='dash') rDash();
+  if(G.tab==='stats') rStats();
+  if(G.tab==='settings') rSettings();
+  if(G.tab==='tournament') rTourn();
+  if(G.tab==='selection') rSel();
+  toast('Team name updated','to');
+};
+window.openRosterNameEditor=function(){
+  mOpen('Edit Player Names',`
+    <div style="display:grid;gap:.35rem;max-height:420px;overflow-y:auto">
+      ${(G.roster||[]).map(p=>`<div class="card2" style="padding:.5rem;display:flex;align-items:center;gap:.55rem">
+        ${playerAvatar(p,28)}
+        <div style="flex:1;min-width:0">
+          <div style="font-size:.78rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</div>
+          <div style="font-size:.66rem;color:var(--tx3)">${p.pos} · ${p.yr} · OVR ${p.ovr}</div>
+        </div>
+        <button class="btn bb" style="font-size:.68rem;padding:.25rem .55rem" onclick="renamePlayerEntity('${p.id}');openRosterNameEditor()">Edit</button>
+      </div>`).join('')}
+    </div>
+  `);
+};
+window.openTeamEditorDirectory=function(){
+  mOpen('Edit Any School',`
+    <div style="display:grid;gap:.35rem;max-height:440px;overflow-y:auto">
+      ${ALL_TEAMS.map(team=>`<div class="card2" style="padding:.5rem;display:flex;align-items:center;gap:.55rem">
+        ${teamLogoBadge(team,26)}
+        <div style="flex:1;min-width:0">
+          <div style="font-size:.78rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${teamLabel(team)}</div>
+          <div style="font-size:.66rem;color:var(--tx3)">${confLabel(confOf(team))}</div>
+        </div>
+        <button class="btn bb" style="font-size:.68rem;padding:.25rem .55rem" onclick="showTeamInfo('${team.replace(/'/g,"\\'")}')">Manage</button>
+      </div>`).join('')}
+    </div>
+  `);
+};
+window.openGeneratedRosterEditor=function(team){
+  const roster=genTeamRoster(team,10);
+  mOpen(`${teamLabel(team)} Roster`,`
+    <div style="display:grid;gap:.35rem;max-height:420px;overflow-y:auto">
+      ${roster.map(p=>`<div class="card2" style="padding:.5rem;display:flex;align-items:center;gap:.55rem">
+        ${playerAvatar(p,28)}
+        <div style="flex:1;min-width:0">
+          <div style="font-size:.78rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</div>
+          <div style="font-size:.66rem;color:var(--tx3)">${p.pos} · ${p.yr} · OVR ${p.ovr}</div>
+        </div>
+        <button class="btn bb" style="font-size:.68rem;padding:.25rem .55rem" onclick="renamePlayerEntity('${p.id}');openGeneratedRosterEditor('${team.replace(/'/g,"\\'")}')">Edit</button>
+      </div>`).join('')}
+    </div>
+  `);
 };
 window.toggleFullscreen=function(){
   const root=document.documentElement;
@@ -3032,6 +3293,7 @@ function openPlayerModal(p,teamName=G.team,titleOverride=''){
     <div style="font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:1.5px;color:var(--tx3);text-transform:uppercase;margin-bottom:.35rem">Career By Season</div>
     <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Season</th><th>Team</th><th>Yr</th><th>GP</th><th>PPG</th><th>RPG</th><th>APG</th><th>OVR</th></tr></thead><tbody>${seasonRows}</tbody></table></div>
     <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem">
+      ${p.id?`<button class="btn bb" onclick="renamePlayerEntity('${p.id}');mHide()">Edit Name</button>`:''}
       ${teamName===G.team&&(G.phase==='season'||G.phase==='preseason')?`<button class="btn br2c" onclick="releaseP('${p.id}');mHide()">Release Player</button>`:''}
       ${teamName===G.team&&!p.redshirt&&p.eligLeft>1?`<button class="btn bpur" onclick="toggleRS('${p.id}');mHide()">Redshirt This Season</button>`:''}
       ${teamName===G.team&&p.redshirt?`<button class="btn bpur" onclick="toggleRS('${p.id}');mHide()">Remove Redshirt</button>`:''}
@@ -3055,14 +3317,16 @@ window.openPortalProfile=function(i){
   const line=(p.seasonLog&&p.seasonLog.length)?p.seasonLog:[{year:G.year-1,team:p.fromTeam,yr:p.yr,gp:ri(20,34),ppg:+(p.ovr/8).toFixed(1),rpg:+(ri(2,10)).toFixed(1),apg:+(ri(1,6)).toFixed(1),ovr:p.ovr}];
   openPlayerModal({...p,seasonLog:line},p.fromTeam,`${p.name} · Transfer Portal`);
 };
-window.openScoutedPlayer=function(name,team,pos,yr,ovr,ppg,rpg,apg,accolade=''){
-  const p=mkP(yr||'So',ovr||72,name);
+window.openScoutedPlayer=function(name,team,pos,yr,ovr,ppg,rpg,apg,accolade='',externalId=''){
+  const ext=(externalId&&((G.generatedTeamRosters||{})[team]||[]).find(p=>p.id===externalId))||null;
+  const p=ext?ensureSeasonLog({...ext}):mkP(yr||'So',ovr||72,name);
   p.team=team;
+  if(externalId) p.id=externalId;
   p.previousTeams=[team];
   p.seasonLog=[{year:G.year,team,yr:yr||'So',gp:ri(18,34),ppg:+(ppg||0),rpg:+(rpg||0),apg:+(apg||0),ovr:ovr||72}];
   p.pts=+(ppg||p.pts);p.reb=+(rpg||p.reb);p.ast=+(apg||p.ast);
   if(accolade) p.accolades=[accolade];
-  openPlayerModal(p,team,`${name} · ${team}`);
+  openPlayerModal(p,team,`${name} · ${teamLabel(team)}`);
 };
 window.retireJersey=function(id){
   const p=(G.osDec||[]).find(x=>x.id===id)||G.roster.find(x=>x.id===id);
@@ -3164,8 +3428,8 @@ window.openLineup=function(){
     <div style="font-size:.78rem;color:var(--tx2);margin-bottom:.55rem">Set your rotation, assign minutes out of 200 total team minutes, and choose how your team plays.</div>
     <div class="card2" style="margin-bottom:.7rem">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:.75rem;flex-wrap:wrap">
-        <div><strong>Coaching System:</strong> ${sys.name}<div style="font-size:.7rem;color:var(--tx3)">${sys.desc}</div></div>
-        <select onchange="setCoachSystem(this.value)" style="padding:.35rem .45rem;border-radius:6px;border:1px solid var(--br2);background:#fff">${Object.entries(COACH_SYSTEMS).map(([k,v])=>`<option value="${k}" ${k===(G.coachSystem||'balanced')?'selected':''}>${v.name}</option>`).join('')}</select>
+        <div class="coach-scheme-card"><strong>Coaching System:</strong> ${sys.name}<div style="font-size:.7rem;color:var(--tx3)">${sys.desc}</div></div>
+        <select onchange="setCoachSystem(this.value)" style="padding:.35rem .45rem;border-radius:6px;border:1px solid var(--br2);background:var(--s0);color:var(--tx)">${Object.entries(COACH_SYSTEMS).map(([k,v])=>`<option value="${k}" ${k===(G.coachSystem||'balanced')?'selected':''}>${v.name}</option>`).join('')}</select>
       </div>
       <div style="font-size:.72rem;color:${totalMins===200?'var(--green2)':'var(--gold)'};margin-top:.45rem">Assigned Minutes: ${totalMins}/200${adjustedPreview?' · will auto-adjust if you leave it this way':''}</div>
     </div>
@@ -3221,7 +3485,8 @@ function rSched(){
   const rem=G.schedule.filter(g=>!g.played).length;
   c.innerHTML=`<div class="sh">Schedule ${G.year-1}–${G.year}</div>
   <div class="ss">${G.wins}-${G.losses} · ${rem} games remaining</div>
-  ${(G.phase==='season'&&G.wins+G.losses===0)?`<div class="card" style="margin-bottom:.75rem"><div style="font-size:.76rem;color:var(--tx2);margin-bottom:.5rem">Before the first game, you can still customize 3 non-conference matchups near the start of the season.</div><button class="btn bb" onclick="openCustomSchedule()">Pick 3 Non-Conference Games</button></div>`:''}
+  ${(G.phase==='season'&&G.wins+G.losses===0&&!(G.customNC||[]).length)?`<div class="card" style="margin-bottom:.75rem"><div style="font-size:.76rem;color:var(--tx2);margin-bottom:.5rem">Before the first game, you can still customize 3 non-conference matchups near the start of the season.</div><button class="btn bb" onclick="openCustomSchedule()">Pick 3 Non-Conference Games</button></div>`:''}
+  ${(G.phase==='season'&&G.wins+G.losses===0&&(G.customNC||[]).length)?`<div class="card" style="margin-bottom:.75rem"><div style="font-size:.76rem;color:var(--tx2);margin-bottom:.45rem">Your non-conference schedule is finalized for this season.</div><div style="display:flex;gap:.35rem;flex-wrap:wrap">${(G.customNC||[]).map(g=>`<span class="pill pn">${teamLabel(g.opp)} · ${(g.site||'home')==='neutral'?'Neutral':(g.site==='away'?'Away':'Home')}</span>`).join('')}</div></div>`:''}
   ${G.phase==='season'&&rem>0?`<div class="brow">
     <button class="btn bg" onclick="sNext()">▶ Sim Next</button>
     <button class="btn bb" onclick="sLive()">🎮 Live Sim</button>
@@ -3257,13 +3522,18 @@ window.sGame=function(i){
   const g=simGame(i,false);
   addNews((g.win?'✅ W ':'❌ L ')+g.myPts+'-'+g.oppPts+' vs '+teamLabel(g.opp),(g.win?'ng':'nr'));
   toast((g.win?'W ':'L ')+g.myPts+'-'+g.oppPts+' vs '+teamLabel(g.opp),g.win?'tw':'tl');
+  if(checkMidseasonFiring()) return;
   if(G.schedule.every(x=>x.played)){G.phase='season-done';updateTopBar();}
   rSched();
 };
 window.sNext=function(){const i=G.schedule.findIndex(g=>!g.played);if(i>=0) sGame(i);};
 window.sLive=function(){const i=G.schedule.findIndex(g=>!g.played);if(i>=0) liveSim(i,null);};
 window.sAll=function(){
-  G.schedule.forEach((_,i)=>{if(!G.schedule[i].played) simGame(i,false);});
+  for(let i=0;i<G.schedule.length;i++){
+    if(G.schedule[i].played) continue;
+    simGame(i,false);
+    if(checkMidseasonFiring()) return;
+  }
   G.phase='season-done';updateTopBar();
   addNews('📅 Season complete: '+G.wins+'-'+G.losses,'no');
   toast('Season simulated: '+G.wins+'-'+G.losses,'ti');rSched();
@@ -3278,7 +3548,7 @@ function bsModal(myT,oppT,myPts,oppPts,myL,oppL,win,statusLabel='FINAL'){
     const ovr=p.ovr||Math.max(55,(p.pts||0)*3+58);
     const click=isUserTeam
       ? `openProfile('${p.id}')`
-      : `openScoutedPlayer('${p.name.replace(/'/g,"\\'")}','${team.replace(/'/g,"\\'")}','${p.pos}','${p.yr||'So'}',${ovr},${p.pts||0},${p.reb||0},${p.ast||0})`;
+      : `openScoutedPlayer('${p.name.replace(/'/g,"\\'")}','${team.replace(/'/g,"\\'")}','${p.pos}','${p.yr||'So'}',${ovr},${p.pts||0},${p.reb||0},${p.ast||0},'', '${(p.id||'').replace(/'/g,"\\'")}')`;
     return `<tr style="cursor:pointer" onclick="${click}"><td style="font-weight:500">${p.name}${p.foulOut?' <span style="color:var(--red2);font-size:.62rem">(FO)</span>':''}</td><td><span class="pchip">${p.pos}</span></td><td>${p.min}</td><td style="font-weight:700">${p.pts}</td><td>${p.reb}</td><td>${p.ast}</td><td>${p.stl}</td><td>${p.blk}</td><td>${p.pf||0}</td><td>${p.fgm}/${p.fga}</td><td>${p.fgPct||0}%</td><td>${p.tpm||0}/${p.tpa||0}</td><td>${p.tpPct||0}%</td><td>${p.ftm||0}/${p.fta}</td><td>${p.ftPct||0}%</td></tr>`;
   };
   mOpen('Box Score',`
@@ -3336,12 +3606,12 @@ function rRec(){
         <div style="cursor:pointer" onclick="openRecruitProfile('${r.id}')">
           <div style="font-weight:600;font-size:.8rem">${r.name}</div>
           <div style="font-size:.62rem;color:var(--tx3)">#${r.rank||'—'} · ${r.bio?.highSchool||'High School'} · ${r.bio?.hometown||''}</div>
-          <div style="font-size:.62rem;color:var(--tx4)">${Object.keys(r.interest).filter(t=>t!==G.team).slice(0,2).join(', ')||'Open'}</div>
+          <div style="font-size:.62rem;color:var(--tx4)">${Object.keys(r.interest).filter(t=>t!==G.team).slice(0,2).map(teamLabel).join(', ')||'Open'}</div>
         </div>
         <div><div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;color:var(--navy)">#${r.rank||'—'}</div><span class="ob ${r.ovr>=88?'oelite':r.ovr>=78?'ohigh':r.ovr>=68?'omid':'olow'}">${r.ovr}</span> <span class="pchip">${r.pos}</span></div>
         <div style="color:var(--gold2);font-size:.82rem">${'★'.repeat(r.stars)}</div>
         <div style="font-size:.65rem;color:var(--tx2)">${r.hsStats?.ppg||0} PPG · ${r.hsStats?.rpg||0} RPG · ${r.hsStats?.apg||0} APG</div>
-        <div>${mine?`<span class="pill pg">Committed ✓</span>`:elsewhere?`<span class="pill pn" style="font-size:.6rem">→ ${r.committedTo.split(' ').slice(-1)[0]}</span>`:`<span class="pill pb">${myInt}% int</span>`}</div>
+        <div>${mine?`<span class="pill pg">Committed ✓</span>`:elsewhere?`<span class="pill pn" style="font-size:.6rem">→ ${teamLabel(r.committedTo)}</span>`:`<span class="pill pb">${myInt}% int</span>`}</div>
         <div>${mine||elsewhere?'—':`<button class="btn ${full||!canAfford?'bo':'bv'}" style="font-size:.68rem;padding:.2rem .5rem"
           onclick="pitch('${r.id}')" ${full||(!canAfford&&cost>0)?'disabled':''}>
           ${full?'Class Full':!canAfford?'Over Budget':'Pitch'+(cost?' ($'+(cost/1e3|0)+'K)':'')}</button>`}</div>
@@ -3423,7 +3693,7 @@ function rTourn(){
       ${confAwardCard(G.confAwards?.poy,'Player of the Year','🏅')}
       ${confAwardCard(G.confAwards?.dpoy,'Defensive Player of the Year','🛡️')}
       ${confAwardCard(G.confAwards?.frosh,'Freshman of the Year','🌟')}
-      <div class="aw-card" style="cursor:pointer" onclick="openCoachProfile('${(G.confAwards?.coy?.name||'').replace(/'/g,"\\'")}','${(G.confAwards?.coy?.team||'').replace(/'/g,"\\'")}','${G.confAwards?.coy?.record||''}','${confLabel(G.conf).replace(/'/g,"\\'")} Coach of the Year')"><div class="aw-ico">🎓</div><div><div class="aw-lbl">Coach of the Year</div><div class="aw-win">${G.confAwards?.coy?.name||'—'}</div><div class="aw-tm">${G.confAwards?.coy?.team||'—'} · ${G.confAwards?.coy?.record||''}</div></div></div>
+      <div class="aw-card" style="cursor:pointer" onclick="openCoachProfile('${(G.confAwards?.coy?.name||'').replace(/'/g,"\\'")}','${(G.confAwards?.coy?.team||'').replace(/'/g,"\\'")}','${G.confAwards?.coy?.record||''}','${confLabel(G.conf).replace(/'/g,"\\'")} Coach of the Year')"><div class="aw-ico">🎓</div><div><div class="aw-lbl">Coach of the Year</div><div class="aw-win">${G.confAwards?.coy?.name||'—'}</div><div class="aw-tm">${teamLabel(G.confAwards?.coy?.team||'—')} · ${G.confAwards?.coy?.record||''}</div></div></div>
       <div style="font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin:.65rem 0 .25rem;font-weight:700">All-Conference First Team</div>
       ${(G.confAwards?.firstTeam||[]).map(p=>confAwardCard(p,'First Team All-Conference','⭐')).join('')}
       <div class="award-subhead-muted" style="font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;margin:.65rem 0 .25rem;font-weight:700">All-Conference Second Team</div>
@@ -3522,6 +3792,7 @@ function rCTBracket(c){
     ${!allDone?`<button class="btn bg" onclick="simCTRound()">Sim All Remaining This Round</button>`:''}
     ${allDone&&lastRd.length>1?`<button class="btn bo" onclick="advCT()">Advance to Next Round</button>`:''}
     ${allDone&&lastRd.length===1?`<button class="btn bg" onclick="finishCT()">Continue to National Tournament →</button>`:''}
+    <button class="btn bb" onclick="downloadBracketScreenshot()">Screenshot Bracket</button>
   </div>
   <div class="bracket-wrap"><div class="bracket">`;
   br.rounds.forEach((rd,ri)=>{
@@ -3764,7 +4035,7 @@ function rHist(){
   const totalW=G.history.reduce((s,h)=>{const m=h.record.match(/^(\d+)/);return s+(m?+m[1]:0);},0);
   const drafted=(G.draftedPlayers||[]).length;
   c.innerHTML=`<div class="sh">Dynasty History</div>
-  <div class="ss">${G.team} · ${G.history.length} seasons completed</div>
+  <div class="ss">${teamLabel(G.team)} · ${G.history.length} seasons completed</div>
   <div class="g4" style="margin-bottom:.85rem">
     <div class="sc"><div class="sv">${G.history.length}</div><div class="sl">Seasons</div></div>
     <div class="sc"><div class="sv" style="color:${titles?'var(--gold)':'var(--navy)'}">${titles}</div><div class="sl">Titles</div></div>
@@ -3826,11 +4097,21 @@ function rSettings(){
     <div class="card">
       <div style="font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;margin-bottom:.55rem;font-weight:700">Current Save</div>
       <div class="g4">
-        <div class="sc"><div class="sv">${G.team||'—'}</div><div class="sl">Team</div></div>
+        <div class="sc"><div class="sv">${teamLabel(G.team)||'—'}</div><div class="sl">Team</div></div>
         <div class="sc"><div class="sv">Year ${G.dyYear||1}</div><div class="sl">Dynasty</div></div>
         <div class="sc"><div class="sv">${(G.diff||'easy').toUpperCase()}</div><div class="sl">Difficulty</div></div>
         <div class="sc"><div class="sv">${getTheme()==='dark'?'Dark':'Light'}</div><div class="sl">Theme</div></div>
       </div>
+    </div>
+  </div>`;
+  c.innerHTML+=`<div class="g2" style="margin-top:.85rem">
+    <div class="card">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;margin-bottom:.55rem;font-weight:700">Edit Names</div>
+      <div style="display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:.55rem">
+        <button class="btn bg" onclick="renameTeamDisplay(G.team)">Rename Current Team</button>
+        <button class="btn bo" onclick="openRosterNameEditor()">Edit Player Names</button>
+      </div>
+      <div style="font-size:.72rem;color:var(--tx2)">Player and team names can be customized, but ratings and gameplay stats stay locked.</div>
     </div>
   </div>`;
   c.innerHTML+=`<div class="card" style="margin-top:.85rem">
@@ -3861,7 +4142,7 @@ function rSettings(){
 ==================================================== */
 function mOpen(title,body){document.getElementById('mtitle').textContent=title;document.getElementById('mbody').innerHTML=body;document.getElementById('mbg').style.display='flex';}
 window.mOut=function(e){if(e.target===document.getElementById('mbg'))mHide();};
-window.mHide=function(){document.getElementById('mbg').style.display='none';};
+window.mHide=function(){document.getElementById('mbg').style.display='none';window._shareCaptureTarget=null;};
 function toast(msg,cls='ti'){
   const w=document.getElementById('tw');
   const el=document.createElement('div');
@@ -3884,7 +4165,7 @@ function statsTable(rows,headers,rowFn,isUserFn){
     <tbody>${rows.map((p,i)=>{
       const cells=rowFn(p);
       const isU=isUserFn(p);
-      const click=isU&&p.id?`openProfile('${p.id}')`:`openScoutedPlayer('${(p.name||'').replace(/'/g,"\\'")}','${(p.team||'').replace(/'/g,"\\'")}','${p.pos||'G'}','${p.yr||'So'}',${p.ovr||72},${p.ppg||0},${p.rpg||0},${p.apg||0})`;
+      const click=isU&&p.id?`openProfile('${p.id}')`:`openScoutedPlayer('${(p.name||'').replace(/'/g,"\\'")}','${(p.team||'').replace(/'/g,"\\'")}','${p.pos||'G'}','${p.yr||'So'}',${p.ovr||72},${p.ppg||0},${p.rpg||0},${p.apg||0},'', '${(p.id||'').replace(/'/g,"\\'")}')`;
       return`<tr class="${isU?'myrow':''}" ${isU?'style="font-weight:600;cursor:pointer"':'style="cursor:pointer"'} onclick="${click}">
         <td style="color:var(--tx3);font-family:\"Barlow Condensed\",sans-serif">${i+1}</td>
         ${cells.map((v,ci)=>`<td${ci===0?` style="font-weight:600"`:''}>${ci===1&&isU?`<span style="color:var(--gold)">${v}</span>`:v}</td>`).join('')}
@@ -3952,7 +4233,7 @@ function generateLeagueNews(){
   const bubbleTeam=(G._lastFour||[])[0];
   const bubbleOut=(G._firstFourOut||[])[0];
   if(topP&&Math.random()<0.55){
-    const lines=[`${topP.name} drops ${ri(22,38)} pts in dominant win`,`${topP.name} named ${confLabel(G.conf)} Player of the Week`,`${topP.name} is now a projected top-${ri(3,15)} NBA Draft pick`,`${shortName(topP.name)} carries ${G.team} to another statement win`];
+    const lines=[`${topP.name} drops ${ri(22,38)} pts in dominant win`,`${topP.name} named ${confLabel(G.conf)} Player of the Week`,`${topP.name} is now a projected top-${ri(3,15)} NBA Draft pick`,`${shortName(topP.name)} carries ${teamLabel(G.team)} to another statement win`];
     pool.push({msg:'⭐ '+rn(lines),cls:'no'});
   }
   if(topRecruit&&Math.random()<0.45){
@@ -3960,15 +4241,15 @@ function generateLeagueNews(){
     pool.push({msg:'🎯 '+rn(lines),cls:'nb'});
   }
   if(G.wins>=5&&Math.random()<0.45){
-    const lines=[`${G.team} rises to #${ri(8,25)} in the AP Poll`,`${G.team} defense is allowing just ${ri(56,70)} PPG`,`${G.team} is riding a ${ri(3,7)}-game winning streak`,`${G.coachName||'The coach'} has ${G.team} believing in March`];
+    const lines=[`${teamLabel(G.team)} rises to #${ri(8,25)} in the AP Poll`,`${teamLabel(G.team)} defense is allowing just ${ri(56,70)} PPG`,`${teamLabel(G.team)} is riding a ${ri(3,7)}-game winning streak`,`${G.coachName||'The coach'} has ${teamLabel(G.team)} believing in March`];
     pool.push({msg:'📊 '+rn(lines),cls:'ng'});
   }
-  if(G.losses>G.wins&&Math.random()<0.35) pool.push({msg:`📉 ${G.team} struggles — school board reviewing expectations`,cls:'nr'});
+  if(G.losses>G.wins&&Math.random()<0.35) pool.push({msg:`📉 ${teamLabel(G.team)} struggles — school board reviewing expectations`,cls:'nr'});
   const rivals=CONFS[G.conf]?CONFS[G.conf].filter(t=>t!==G.team):[];
-  if(rivals.length&&Math.random()<0.25) pool.push({msg:`📰 ${rn(rivals)} lands ${ri(3,5)}-star commitment`,cls:'nb'});
+  if(rivals.length&&Math.random()<0.25) pool.push({msg:`📰 ${teamLabel(rn(rivals))} lands ${ri(3,5)}-star commitment`,cls:'nb'});
   if(G.coachName&&G.wins>15&&G.dyYear>1&&Math.random()<0.18) pool.push({msg:`🎓 ${G.coachName} drawing interest from other major programs`,cls:'np'});
   if(bubbleTeam&&Math.random()<0.55){
-    const bubbleLines=[`${bubbleTeam} surges into the projected field after a huge week`,`The bubble tightens as ${bubbleTeam} fights for a bid`,`Bracket experts now have ${bubbleTeam} barely in the National Tournament field`];
+    const bubbleLines=[`${teamLabel(bubbleTeam)} surges into the projected field after a huge week`,`The bubble tightens as ${teamLabel(bubbleTeam)} fights for a bid`,`Bracket experts now have ${teamLabel(bubbleTeam)} barely in the National Tournament field`];
     pool.push({msg:'🫧 '+rn(bubbleLines),cls:'no'});
   }
   if(bubbleOut&&Math.random()<0.42){
@@ -3984,7 +4265,12 @@ function generateLeagueNews(){
    NATIONAL TOURNAMENT SELECTION ANNOUNCEMENT
 ==================================================== */
 function teamLogoBadge(team,size=24){
-  return `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${tc(team)};color:${tcTx(team)};display:flex;align-items:center;justify-content:center;text-align:center;line-height:1;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:${Math.max(10,Math.round(size*.3))}px;box-shadow:0 6px 16px rgba(0,0,0,.16);border:2px solid rgba(255,255,255,.82);flex-shrink:0">${teamLogoText(team)}</div>`;
+  const txt=teamLogoText(team);
+  const len=Math.max(1,txt.length);
+  const fs=Math.max(8,Math.round(size*(len>=3?.2:len===2?.27:.33)));
+  const ls=len>=3?.12:.38;
+  const pad=Math.max(2,Math.round(size*.08));
+  return `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${tc(team)};color:${tcTx(team)};display:flex;align-items:center;justify-content:center;text-align:center;line-height:.92;padding:${pad}px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:${fs}px;letter-spacing:${ls}px;box-shadow:0 6px 16px rgba(0,0,0,.16);border:2px solid rgba(255,255,255,.82);flex-shrink:0;overflow:hidden">${txt}</div>`;
 }
 function getRegionTheme(region){
   return {
@@ -4260,36 +4546,69 @@ function computeTeamRatings(){
 /* ====================================================
    JOB SECURITY & CONTRACT
 ==================================================== */
-function updateJobSecurity(){
+function jobSecurityConfig(){
+  return{
+    easy:{base:-6,winMiss:3.5,confMiss:2.5,fieldMiss:12,fire:16,hot:28},
+    medium:{base:-12,winMiss:4.5,confMiss:3.2,fieldMiss:18,fire:24,hot:36},
+    hard:{base:-18,winMiss:5.6,confMiss:4.1,fieldMiss:24,fire:32,hot:46},
+    impossible:{base:-24,winMiss:6.8,confMiss:4.8,fieldMiss:30,fire:40,hot:56},
+  }[G.diff]||{base:-12,winMiss:4.5,confMiss:3.2,fieldMiss:18,fire:24,hot:36};
+}
+function projectedTargets(){
+  const totalGames=Math.max(1,G.schedule?.length||31);
+  const played=Math.max(0,G.wins+G.losses);
+  const confPlayed=Math.max(0,G.cw+G.cl);
+  const progress=played/totalGames;
+  const projectedWins=played?Math.round((G.wins/played)*totalGames):0;
+  const confTotal=Math.max(1,(CONFS[G.conf]||[]).length-1);
+  const projectedConfWins=confPlayed?Math.round((G.cw/confPlayed)*confTotal):0;
+  return{played,totalGames,confPlayed,confTotal,progress,projectedWins,projectedConfWins};
+}
+function updateJobSecurity(finalize=false){
   const ex=getExpectations();
-  const winPct=(G.wins+G.losses)>0?G.wins/(G.wins+G.losses):0.5;
-  let delta=0;
-  if(G.wins>=ex.winTarget) delta+=15;
-  else if(G.wins<ex.winTarget-5) delta-=20;
-  if(G.champ===G.team) delta+=40;
-  else if(G.mmData&&G.mmData.seeded&&G.mmData.seeded.some(s=>s.team===G.team)) delta+=10;
-  if(G.history.length>0&&G.history[G.history.length-1].isChamp) delta+=15;
-  // Diff modifier — harder diff = harder to keep job
-  const dMod={easy:5,medium:0,hard:-8,impossible:-15}[G.diff]||0;
-  delta+=dMod;
-  G.jobSecurity=clamp((G.jobSecurity||80)+delta,0,100);
-  G.contractYear=Math.max(0,(G.contractYear||3)-1);
+  const diffCfg=jobSecurityConfig();
+  const baseStart=G.jobSecuritySeasonStart??G.jobSecurity??80;
+  const {progress,projectedWins,projectedConfWins}=projectedTargets();
+  const projectedLosses=Math.max(0,(G.schedule?.length||31)-projectedWins);
+  const inField=!!(G.mmData?.seeded?.some(s=>s.team===G.team)||(G.mmData?.playIn||[]).some(m=>m.a?.team===G.team||m.b?.team===G.team));
+  const winBase=finalize?G.wins:projectedWins;
+  const confBase=finalize?G.cw:projectedConfWins;
+  const scale=finalize?1:Math.max(.2,progress);
+  const winMiss=Math.max(0,ex.winTarget-winBase);
+  const confMiss=Math.max(0,ex.confTarget-confBase);
+  let delta=diffCfg.base*scale;
+  delta-=winMiss*diffCfg.winMiss;
+  delta-=confMiss*diffCfg.confMiss;
+  if(finalize&&ex.tournExp==='National Tournament appearance'&&!inField) delta-=diffCfg.fieldMiss;
+  if(ex.tournExp==='Winning season'&&((finalize?G.wins:projectedWins)<= (finalize?G.losses:projectedLosses))) delta-=10*scale;
+  if(finalize&&ex.tournExp==='Conference tournament win'&&!(G.ctData?.champion?.team===G.team||G.ctData?.champion===G.team)) delta-=9;
+  if(G.champ===G.team) delta+=48;
+  else if(G.mmData&&G.mmData.seeded&&G.mmData.seeded.some(s=>s.team===G.team)) delta+=8;
+  if(G.history.length>0&&G.history[G.history.length-1].isChamp) delta+=12;
+  if(winMiss===0&&progress>.3) delta+=10*scale;
+  G.jobSecurity=clamp(baseStart+delta,0,100);
+  G._jobThresholds={fire:diffCfg.fire,hot:diffCfg.hot};
+  if(finalize) G.contractYear=Math.max(0,(G.contractYear||3)-1);
 }
 
 function getJobStatus(){
   const js=G.jobSecurity||80;
+  const fire=G._jobThresholds?.fire??24;
+  const hot=G._jobThresholds?.hot??36;
   if(js>=80) return{label:'Secure',color:'var(--green2)',pill:'pg',icon:'🟢'};
   if(js>=60) return{label:'Stable',color:'var(--gold)',pill:'po',icon:'🟡'};
-  if(js>=40) return{label:'On Notice',color:'var(--orange)',pill:'po',icon:'🟠'};
-  if(js>=20) return{label:'Hot Seat',color:'var(--red2)',pill:'pr',icon:'🔴'};
+  if(js>=hot) return{label:'On Notice',color:'var(--orange)',pill:'po',icon:'🟠'};
+  if(js>=fire) return{label:'Hot Seat',color:'var(--red2)',pill:'pr',icon:'🔴'};
   return{label:'Fired',color:'var(--red2)',pill:'pr',icon:'💀'};
 }
 
 function checkContractRenewal(){
   // Called at end of season in doOS
-  updateJobSecurity();
+  updateJobSecurity(true);
   const js=G.jobSecurity;
-  const fired=js<20||(js<35&&Math.random()<0.5);
+  const fire=G._jobThresholds?.fire??24;
+  const hot=G._jobThresholds?.hot??36;
+  const fired=js<fire||(js<hot&&Math.random()<0.72);
   if(fired){
     // Generate job offers from other teams
     const presNeeded=clamp(G.pres+ri(-1,1),1,5);
@@ -4301,10 +4620,48 @@ function checkContractRenewal(){
   // Extension
   if(js>=70&&G.contractYear<=0){
     G.contractYear=3;
-    addNews('📋 '+G.coachName+' signs contract extension at '+G.team,'ng');
+    addNews('📋 '+G.coachName+' signs contract extension at '+teamLabel(G.team),'ng');
   }
   G.firedData=null;
   return false;
+}
+function openFiringModal(midseason=false){
+  if(!G.firedData) return;
+  const offers=G.firedData.offers||[];
+  mOpen('School Board Decision',`
+    <div style="text-align:center;padding:1rem 0;margin-bottom:.85rem">
+      <div style="font-size:2rem;margin-bottom:.35rem">🚨</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:900;color:var(--red2)">You've been fired from ${teamLabel(G.firedData.oldTeam)}</div>
+      <div style="font-size:.8rem;color:var(--tx2);margin-top:.3rem">${midseason?'The board made a midseason change after missing expectations. Taking a new job restarts the current season with that program.':'Job security fell below acceptable levels.'}</div>
+    </div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;margin-bottom:.55rem;font-weight:700">Available Positions</div>
+    ${offers.length?offers.map(t=>`<div style="display:flex;align-items:center;gap:.65rem;padding:.6rem;background:var(--s1);border:1px solid var(--br);border-radius:8px;margin-bottom:.4rem;cursor:pointer" onclick="acceptJob('${t}')">
+      <div style="width:32px;height:32px;border-radius:50%;background:${tc(t)};display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:.65rem;color:${tcTx(t)}">${abbr(teamLabel(t))}</div>
+      <div style="flex:1"><div style="font-weight:600">${teamLabel(t)}</div><div style="font-size:.7rem;color:var(--tx2)">${confLabel(confOf(t))} · ${'★'.repeat(pres(t))} Prestige · $${(nilBase(t)/1e6).toFixed(1)}M NIL</div></div>
+      <button class="btn bv" style="font-size:.75rem">Accept</button>
+    </div>`).join(''):`<div style="color:var(--tx3);font-size:.8rem">No offers available. Remain a free agent for now.</div>`}
+    <button class="btn bo" style="width:100%;margin-top:.75rem" onclick="mHide();switchTab('dash')">Remain Free Agent</button>
+  `);
+}
+function checkMidseasonFiring(){
+  if(!['hard','impossible'].includes(G.diff)) return false;
+  if(G.phase!=='season') return false;
+  if((G.wins+G.losses)<8) return false;
+  updateJobSecurity(false);
+  const js=G.jobSecurity||80;
+  const fire=G._jobThresholds?.fire??32;
+  const hot=G._jobThresholds?.hot??46;
+  const {progress}=projectedTargets();
+  const fired=js<fire||(progress>.45&&js<hot&&Math.random()<(G.diff==='impossible'?.72:.58));
+  if(!fired) return false;
+  const presNeeded=clamp((pres(G.team)||G.pres)+ri(-1,1),1,5);
+  const offers=shuffle(ALL_TEAMS.filter(t=>t!==G.team&&pres(t)>=presNeeded-1&&pres(t)<=presNeeded+1)).slice(0,3);
+  G.firedData={fired:true,offers,oldTeam:G.team,midseason:true};
+  G.phase='season-fired';
+  addNews('🚨 '+G.coachName+' fired midseason from '+teamLabel(G.team)+' — job security: '+js+'%','nr');
+  saveGame();
+  openFiringModal(true);
+  return true;
 }
 
 /* ====================================================
@@ -4377,7 +4734,7 @@ const TEAM_HISTORY={
   'Dayton':{confChamps:8,natChamps:0,firstRounds:2,tourns:20,notable:'Mid-major heavyweight backed by one of the sport\'s best atmospheres'},
 };
 function getTeamHistory(t){
-  const base={...(TEAM_HISTORY[t]||{confChamps:ri(0,8),natChamps:0,firstRounds:ri(0,5),tourns:ri(5,25),notable:t+' basketball program'})};
+  const base={...(TEAM_HISTORY[t]||{confChamps:ri(0,8),natChamps:0,firstRounds:ri(0,5),tourns:ri(5,25),notable:teamLabel(t)+' basketball program'})};
   if(t===G.team&&G.teamHistory){
     base.confChamps+=G.teamHistory.confChamps||0;
     base.natChamps+=G.teamHistory.natChamps||0;
@@ -4395,6 +4752,7 @@ function getTeamHistory(t){
    UPDATED rDash with job security, AP rank, team ratings
 ==================================================== */
 function rDash(){
+  if(G.phase==='season'||G.phase==='season-done') updateJobSecurity(false);
   const c=document.getElementById('content');
   const titles=G.history.filter(h=>h.isChamp).length;
   const rem=G.schedule.filter(g=>!g.played).length;
@@ -4408,7 +4766,7 @@ function rDash(){
     <div style="display:flex;align-items:center;gap:.65rem">
       <div style="width:44px;height:44px;border-radius:50%;background:${tc(G.team)};color:${tcTx(G.team)};display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:.85rem;box-shadow:var(--shadow2)">${abbr(G.team)}</div>
       <div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:900;letter-spacing:2px;color:var(--navy)">${G.team}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:900;letter-spacing:2px;color:var(--navy)">${teamLabel(G.team)}</div>
           <div style="font-size:.7rem;color:var(--tx3)">${confLabel(G.conf)} · ${G.year-1}–${G.year} · Year ${G.dyYear} · ${'★'.repeat(G.pres)} · Head Coach: ${G.coachName||'Coach'}</div>
       </div>
     </div>
@@ -4441,6 +4799,19 @@ function rDash(){
       </div>
       <div class="prog" style="margin-bottom:.5rem"><div class="progf ${G.jobSecurity<40?'d':G.jobSecurity<65?'w':''}" style="width:${G.jobSecurity||80}%"></div></div>
       <div style="font-size:.72rem;color:var(--tx2)">${G.jobSecurity||80}% security · Contract: ${G.contractYear||3}yr remaining</div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:1rem">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:.6rem;flex-wrap:wrap">
+      <div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;font-weight:700">Customize Names</div>
+        <div style="font-size:.72rem;color:var(--tx2);margin-top:.25rem">Edit your team, your roster, or open any school in the game to rename its program and players.</div>
+      </div>
+      <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+        <button class="btn bg" onclick="renameTeamDisplay(G.team)">Rename Team</button>
+        <button class="btn bb" onclick="openRosterNameEditor()">Edit Players</button>
+        <button class="btn bo" onclick="openTeamEditorDirectory()">Any School</button>
+      </div>
     </div>
   </div>
   <div class="g2">
@@ -4477,7 +4848,7 @@ function rStands(){
       <div style="font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:2px;color:var(--navy);text-transform:uppercase;margin-bottom:.45rem;font-weight:800">${confLabel(conf)}</div>
       <div style="overflow-x:auto"><table class="tbl">
       <thead><tr><th>Rk</th><th>Team</th><th>Conf</th><th>Overall</th><th>Pct</th><th>PPG</th><th>Opp</th><th>Margin</th></tr></thead>
-      <tbody>${sorted.map((r,i)=>`<tr class="${r.name===G.team?'myrow':i<2?'toprow':''}">
+      <tbody>${sorted.map((r,i)=>`<tr class="${r.name===G.team?'myrow':(G.ap25||[]).some(ap=>ap.team===r.name)?'toprow':''}">
         <td style="color:var(--tx3);font-family:'Barlow Condensed',sans-serif;font-weight:700">${i+1}</td>
         <td><div style="display:flex;align-items:center;gap:.5rem;cursor:pointer" onclick="showTeamInfo('${r.name}')">${teamLogoBadge(r.name,18)}<span style="font-weight:${r.name===G.team?'700':'400'};color:${r.name!==G.team?'var(--blue)':'var(--navy)'}">${teamLabel(r.name)}${r.name===G.team?' ◀':''}</span></div></td>
         <td>${r.cw}-${r.cl}</td>
@@ -4585,19 +4956,19 @@ function rStats(){
   } else if(tab==='scoring'){
     const top=[...pool].sort((a,b)=>b.ppg-a.ppg).slice(0,25);
     html+=statsTable(top,['','Name','Team','Pos','Yr','GP','PPG','3PG','FT/G','FG%','3P%'],
-      p=>[playerAvatar(p,24),p.name,p.team,p.pos,p.yr,p.gp,p.ppg,p.tpg,p.ftpg,p.fgPct+'%',p.tpPct+'%'],p=>p.isUser);
+      p=>[playerAvatar(p,24),p.name,teamLabel(p.team),p.pos,p.yr,p.gp,p.ppg,p.tpg,p.ftpg,p.fgPct+'%',p.tpPct+'%'],p=>p.isUser);
   } else if(tab==='rebounds'){
     const top=[...pool].sort((a,b)=>b.rpg-a.rpg).slice(0,25);
     html+=statsTable(top,['','Name','Team','Pos','Yr','GP','RPG','PPG','PF','FG%'],
-      p=>[playerAvatar(p,24),p.name,p.team,p.pos,p.yr,p.gp,p.rpg,p.ppg,p.pf,p.fgPct+'%'],p=>p.isUser);
+      p=>[playerAvatar(p,24),p.name,teamLabel(p.team),p.pos,p.yr,p.gp,p.rpg,p.ppg,p.pf,p.fgPct+'%'],p=>p.isUser);
   } else if(tab==='assists'){
     const top=[...pool].sort((a,b)=>b.apg-a.apg).slice(0,25);
     html+=statsTable(top,['','Name','Team','Pos','Yr','GP','APG','PPG','3PG','FT%'],
-      p=>[playerAvatar(p,24),p.name,p.team,p.pos,p.yr,p.gp,p.apg,p.ppg,p.tpg,p.ftPct+'%'],p=>p.isUser);
+      p=>[playerAvatar(p,24),p.name,teamLabel(p.team),p.pos,p.yr,p.gp,p.apg,p.ppg,p.tpg,p.ftPct+'%'],p=>p.isUser);
   } else if(tab==='defense'){
     const top=[...pool].sort((a,b)=>(b.blk+b.stl)-(a.blk+a.stl)).slice(0,25);
     html+=statsTable(top,['','Name','Team','Pos','Yr','BPG','SPG','PF','OVR'],
-      p=>[playerAvatar(p,24),p.name,p.team,p.pos,p.yr,p.blk,p.stl,p.pf,p.ovr],p=>p.isUser);
+      p=>[playerAvatar(p,24),p.name,teamLabel(p.team),p.pos,p.yr,p.blk,p.stl,p.pf,p.ovr],p=>p.isUser);
   } else {
     // Team efficiency rankings
     const teams=Object.values(G.confStands).sort((a,b)=>b.w-a.w);
@@ -4650,17 +5021,11 @@ window.showTeamInfo=function(teamName){
   const cl=s?s.cl:ri(1,8);
   const hist=getTeamHistory(teamName);
   const ratings=getTeamRatingsFor(teamName);
-  const rosterView=Array.from({length:10},(_,i)=>{
-    const o=clamp(ratings.ovr+ri(-8,7),58,96);
-    const yr=['Fr','So','Jr','Sr'][i%4];
-    const p=mkP(yr,o,rname());
-    p.team=teamName;
-    return p;
-  });
+  const rosterView=genTeamRoster(teamName,10);
   const results=buildTeamProfileResults(teamName);
   const rankLabel=opp=>{
     const rank=(G.ap25||[]).find(r=>r.team===opp)?.rank;
-    return rank?`#${rank} ${opp}`:opp;
+    return rank?`#${rank} ${teamLabel(opp)}`:teamLabel(opp);
   };
   const nw=results.filter(r=>r.win).sort((a,b)=>(getTeamRank(a.opp)||99)-(getTeamRank(b.opp)||99)||pres(b.opp)-pres(a.opp)).slice(0,3);
   const nl=results.filter(r=>!r.win).sort((a,b)=>(getTeamRank(a.opp)||99)-(getTeamRank(b.opp)||99)||pres(b.opp)-pres(a.opp)).slice(0,3);
@@ -4690,10 +5055,14 @@ window.showTeamInfo=function(teamName){
       <div class="sc"><div class="sv">${ratings.coaching}</div><div class="sl">Coach</div></div>
       <div class="sc"><div class="sv">${ratings.recruiting}</div><div class="sl">Rec</div></div>
     </div>
+    <div style="display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:.85rem">
+      <button class="btn bb" onclick="renameTeamDisplay('${teamName.replace(/'/g,"\\'")}');mHide()">Rename Team</button>
+      <button class="btn bg" onclick="openGeneratedRosterEditor('${teamName.replace(/'/g,"\\'")}')">Edit Players</button>
+    </div>
     <div style="font-size:.75rem;color:var(--tx2);margin-bottom:.85rem;font-style:italic">"${hist.notable}"</div>
     <div style="font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;margin-bottom:.35rem;font-weight:700">Projected Roster</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:.35rem;margin-bottom:.85rem">
-      ${rosterView.map(p=>`<div class="card2" style="padding:.45rem;display:flex;align-items:center;gap:.45rem;cursor:pointer" onclick="openScoutedPlayer('${p.name.replace(/'/g,"\\'")}','${teamName.replace(/'/g,"\\'")}','${p.pos}','${p.yr}',${p.ovr},${p.pts},${p.reb},${p.ast})">${playerAvatar(p,28)}<div style="flex:1;min-width:0"><div style="font-size:.72rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</div><div style="font-size:.62rem;color:var(--tx3)">${p.pos} · ${p.yr} · ${p.height}</div></div><span class="ob ${p.ovr>=88?'oelite':p.ovr>=78?'ohigh':p.ovr>=68?'omid':'olow'}">${p.ovr}</span></div>`).join('')}
+      ${rosterView.map(p=>`<div class="card2" style="padding:.45rem;display:flex;align-items:center;gap:.45rem;cursor:pointer" onclick="openScoutedPlayer('${p.name.replace(/'/g,"\\'")}','${teamName.replace(/'/g,"\\'")}','${p.pos}','${p.yr}',${p.ovr},${p.pts},${p.reb},${p.ast},'', '${(p.id||'').replace(/'/g,"\\'")}')">${playerAvatar(p,28)}<div style="flex:1;min-width:0"><div style="font-size:.72rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</div><div style="font-size:.62rem;color:var(--tx3)">${p.pos} · ${p.yr} · ${p.height}</div></div><span class="ob ${p.ovr>=88?'oelite':p.ovr>=78?'ohigh':p.ovr>=68?'omid':'olow'}">${p.ovr}</span></div>`).join('')}
     </div>
     ${nw.length?`<div style="font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:2px;color:var(--green2);text-transform:uppercase;margin-bottom:.4rem;font-weight:700">Notable Wins</div>
     ${nw.map(r=>`<div style="display:flex;justify-content:space-between;padding:.35rem .5rem;background:rgba(21,122,64,.06);border-radius:6px;margin-bottom:.28rem;font-size:.78rem"><span>vs ${rankLabel(r.opp)}</span><span style="color:var(--green2);font-weight:700">${r.score}</span></div>`).join('')}`:''}
@@ -4720,7 +5089,7 @@ function rPortal(){
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:2px;color:var(--blue);text-transform:uppercase;font-weight:900;margin-bottom:.15rem">💎 Diamond Crystal Board</div>
         <div style="font-size:.74rem;color:var(--tx2)">Portal crystal balls now sit on a feature board so favorite destinations are easier to scan.</div>
       </div>
-      <div style="display:flex;gap:.4rem;flex-wrap:wrap">${avail.slice(0,3).map(p=>`<div style="padding:.45rem .65rem;border-radius:10px;background:linear-gradient(135deg,#ffffff,#eef6ff);border:1px solid var(--br);min-width:150px"><div style="font-size:.72rem;font-weight:800;color:var(--navy)">💎 ${p.name}${p.ovr>=85?` <span style="color:var(--gold);font-size:.6rem;letter-spacing:1px">IMPACT</span>`:''}</div><div style="font-size:.64rem;color:var(--tx3)">${p.crystalBall?.team||'Open'} · ${p.crystalBall?.odds||50}%</div></div>`).join('')}</div>
+      <div style="display:flex;gap:.4rem;flex-wrap:wrap">${avail.slice(0,3).map(p=>`<div style="padding:.45rem .65rem;border-radius:10px;background:linear-gradient(135deg,#ffffff,#eef6ff);border:1px solid var(--br);min-width:150px"><div style="font-size:.72rem;font-weight:800;color:var(--navy)">💎 ${p.name}${p.ovr>=85?` <span style="color:var(--gold);font-size:.6rem;letter-spacing:1px">IMPACT</span>`:''}</div><div style="font-size:.64rem;color:var(--tx3)">${p.crystalBall?.team?teamLabel(p.crystalBall.team):'Open'} · ${p.crystalBall?.odds||50}%</div></div>`).join('')}</div>
     </div>
   </div>
   ${!isOS?`<div style="background:var(--redbg);border:1px solid rgba(192,32,32,.25);border-radius:8px;padding:.55rem .85rem;margin-bottom:.85rem;font-size:.8rem;color:var(--red2);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px">⛔ PORTAL CLOSED — Opens after National Tournament ends</div>`:''}
@@ -4741,11 +5110,11 @@ function rPortal(){
     <div class="rb-grid">
       <div class="rb-hdr" style="grid-template-columns:1fr 80px 60px 100px 170px 110px"><div>Player</div><div>OVR</div><div>Yr</div><div>NIL Cost</div><div>Crystal Ball</div><div>Action</div></div>
       <div>${players.map((p,pi)=>`<div class="rb-row" style="grid-template-columns:1fr 80px 60px 100px 170px 110px;${p.ovr>=85?'border-left:4px solid var(--gold);background:linear-gradient(135deg,rgba(255,249,233,.92),rgba(255,255,255,.98))':''}">
-        <div style="cursor:pointer" onclick="openPortalProfile(${G.portal.indexOf(p)})"><div style="font-weight:500;font-size:.8rem">${p.name}${p.ovr>=85?` <span style="font-size:.58rem;color:var(--gold);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;font-weight:800">IMPACT TRANSFER</span>`:''}</div><div style="font-size:.62rem;color:var(--tx3)">${p.pos} · from ${p.fromTeam}${p.ovr>=85?` · ${p.yr} looking to win now`:''}</div></div>
+        <div style="cursor:pointer" onclick="openPortalProfile(${G.portal.indexOf(p)})"><div style="font-weight:500;font-size:.8rem">${p.name}${p.ovr>=85?` <span style="font-size:.58rem;color:var(--gold);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;font-weight:800">IMPACT TRANSFER</span>`:''}</div><div style="font-size:.62rem;color:var(--tx3)">${p.pos} · from ${teamLabel(p.fromTeam)}${p.ovr>=85?` · ${p.yr} looking to win now`:''}</div></div>
         <div><span class="ob ${p.ovr>=88?'oelite':p.ovr>=78?'ohigh':p.ovr>=68?'omid':'olow'}">${p.ovr}</span></div>
         <div style="color:var(--tx2)">${p.yr} · ${p.eligLeft}yr</div>
         <div style="font-weight:700;color:var(--green2);font-family:'Barlow Condensed',sans-serif;font-size:.8rem">$${p.nilCost>=1e6?(p.nilCost/1e6).toFixed(2)+'M':(p.nilCost/1e3).toFixed(0)+'K'}</div>
-        <div style="font-size:.65rem;color:var(--tx2);padding:.22rem .38rem;border-radius:8px;background:linear-gradient(135deg,#ffffff,#eef6ff);border:1px solid var(--br)">${p.crystalBall?`💎 ${p.crystalBall.team} <span style="color:var(--blue);font-weight:800">(${p.crystalBall.odds}%)</span>`:'Open'}</div>
+        <div style="font-size:.65rem;color:var(--tx2);padding:.22rem .38rem;border-radius:8px;background:linear-gradient(135deg,#ffffff,#eef6ff);border:1px solid var(--br)">${p.crystalBall?`💎 ${teamLabel(p.crystalBall.team)} <span style="color:var(--blue);font-weight:800">(${p.crystalBall.odds}%)</span>`:'Open'}</div>
         <div>${isOS?`<button class="btn bv" style="font-size:.68rem;padding:.2rem .5rem" onclick="signPortal(${G.portal.indexOf(p)})" ${p.nilCost>rem||G.roster.length>=15?'disabled':''}>${p.nilCost>rem?'Over Budget':G.roster.length>=15?'Roster Full':'Sign'}</button>`:`<span style="font-size:.7rem;color:var(--tx4)">Closed</span>`}</div>
       </div>`).join('')}</div>
     </div>`;
@@ -4757,8 +5126,8 @@ function rPortal(){
       <div style="font-weight:500">${m.name}</div>
       <div><span class="ob ${m.ovr>=82?'ohigh':'omid'}">${m.ovr}</span></div>
       <div style="color:var(--tx2)">${m.yr}</div>
-      <div style="color:var(--tx3)">${m.from}</div>
-      <div style="font-weight:${m.to===G.team?'700':'400'};color:${m.to===G.team?'var(--gold)':'var(--tx)'}">${m.to}${m.to===G.team?' ★':''}</div>
+      <div style="color:var(--tx3)">${teamLabel(m.from)}</div>
+      <div style="font-weight:${m.to===G.team?'700':'400'};color:${m.to===G.team?'var(--gold)':'var(--tx)'}">${teamLabel(m.to)}${m.to===G.team?' ★':''}</div>
     </div>`).join('')}</div>
   </div>`:`<div style="color:var(--tx3);font-size:.78rem;padding:.75rem">No portal moves yet.</div>`}`;
 }
@@ -4791,12 +5160,13 @@ function rMMBracket(c){
   }).filter(Boolean);
   let html=`<div class="sh">National Tournament</div>
   <div class="ss">64 teams · ${mySeed?'Seed #'+mySeed.seed+' · '+mySeed.region+' Region'+(mySeed.playIn?' · First Four':''):'—'}</div>
-  ${mySeed?`<div class="card" style="margin-bottom:.65rem;padding:.45rem .85rem;font-size:.78rem;color:var(--tx2)">${G.team} — Seed #${mySeed.seed} (${mySeed.region} Region)${mySeed.playIn?' · First Four':''}</div>`:''}
+  ${mySeed?`<div class="card" style="margin-bottom:.65rem;padding:.45rem .85rem;font-size:.78rem;color:var(--tx2)">${teamLabel(G.team)} — Seed #${mySeed.seed} (${mySeed.region} Region)${mySeed.playIn?' · First Four':''}</div>`:''}
   <div class="brow">
     ${(mm.playIn?.length&&!mm.ready)?`<button class="btn bg" onclick="simAllPlayIn()" ${playInPending?'':'disabled'}>Sim All First Four</button><button class="btn bo" onclick="simNextPlayIn()" ${playInPending?'':'disabled'}>Sim Next First Four Game</button><button class="btn bgold" onclick="advanceToRoundOf64()" ${!playInPending?'':'disabled'}>Advance to Round of 64</button>`:''}
     ${mm.ready&&round64Ready&&!allDone?`<button class="btn bg" onclick="simMMRound()">Simulate Round</button>`:''}
     ${mm.ready&&round64Ready&&allDone&&activeRd.length>1?`<button class="btn bo" onclick="advMM()">Advance to Next Round</button>`:''}
     ${mm.ready&&allDone&&activeRd.length===1?`<button class="btn bg" onclick="finishMM()">See Champion</button>`:''}
+    <button class="btn bb" onclick="downloadBracketScreenshot()">Screenshot Bracket</button>
   </div>`;
   if(playInPending||(!playInPending&&mm.playIn?.length&&!mm.ready)||showPlayInResults){
     html+=`<div class="card" style="margin-bottom:.85rem;background:linear-gradient(135deg,#f5f0ff,#fff);border-color:#d7c4f2">
@@ -4936,7 +5306,7 @@ window.advanceSeason=function(){
       <div style="padding:1rem;background:radial-gradient(circle at top,rgba(255,213,105,.2),transparent 34%),linear-gradient(180deg,#10182a,#16223b 58%,#0f1627);border:1px solid rgba(255,213,105,.22);border-radius:18px;color:#eef3ff;text-align:center;box-shadow:0 18px 40px rgba(0,0,0,.35)">
         <div style="font-size:3rem;line-height:1;margin-bottom:.35rem">🏆</div>
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:2rem;font-weight:900;letter-spacing:4px;color:#ffd569;line-height:1;margin-bottom:.2rem">CAREER COMPLETE</div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;letter-spacing:1.8px;color:#f4f7ff;margin-bottom:.35rem">${G.team}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;letter-spacing:1.8px;color:#f4f7ff;margin-bottom:.35rem">${teamLabel(G.team)}</div>
         <div style="font-size:.8rem;color:#c9d4f0;margin-bottom:.95rem">Your coaching run reached the ${MAX_DYNASTY_YEARS}-season cap.</div>
         <div class="g4" style="margin-bottom:.9rem">
           <div class="sc" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)"><div class="sv" style="color:#f4f7ff">${G.history.length}</div><div class="sl" style="color:#c9d4f0">Seasons</div></div>
@@ -4965,22 +5335,7 @@ window.advanceSeason=function(){
   toast('Welcome to Year '+G.dyYear+'!','to');
   saveGame();
   if(fired&&G.firedData){
-    // Show firing modal
-    const offers=G.firedData.offers||[];
-    mOpen('School Board Decision',`
-      <div style="text-align:center;padding:1rem 0;margin-bottom:.85rem">
-        <div style="font-size:2rem;margin-bottom:.35rem">🚨</div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:900;color:var(--red2)">You've been fired from ${teamLabel(G.firedData.oldTeam)}</div>
-        <div style="font-size:.8rem;color:var(--tx2);margin-top:.3rem">Job security fell below acceptable levels</div>
-      </div>
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;margin-bottom:.55rem;font-weight:700">Available Positions</div>
-      ${offers.length?offers.map((t,i)=>`<div style="display:flex;align-items:center;gap:.65rem;padding:.6rem;background:var(--s1);border:1px solid var(--br);border-radius:8px;margin-bottom:.4rem;cursor:pointer" onclick="acceptJob('${t}')">
-        <div style="width:32px;height:32px;border-radius:50%;background:${tc(t)};display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:.65rem;color:${tcTx(t)}">${abbr(t)}</div>
-        <div style="flex:1"><div style="font-weight:600">${t}</div><div style="font-size:.7rem;color:var(--tx2)">${confLabel(confOf(t))} · ${'★'.repeat(pres(t))} Prestige · $${(nilBase(t)/1e6).toFixed(1)}M NIL</div></div>
-        <button class="btn bv" style="font-size:.75rem">Accept</button>
-      </div>`).join(''):`<div style="color:var(--tx3);font-size:.8rem">No offers available. Retire?</div>`}
-      <button class="btn bo" style="width:100%;margin-top:.75rem" onclick="mHide();switchTab('dash')">Remain Free Agent</button>
-    `);
+    openFiringModal(false);
   } else {
     switchTab('dash');
   }
@@ -4996,19 +5351,25 @@ window.releaseOffseasonPlayer=function(id){
 
 window.acceptJob=function(newTeam){
   mHide();
-  const oldTeam=G.team;
+  const midseasonTakeover=G.phase==='season-fired'||G.firedData?.midseason;
   G.team=newTeam;
   G.conf=confOf(newTeam);
   G.pres=pres(newTeam);
   G.nilBudget=nilBase(newTeam);
   G.nilSpent=0;
   G.jobSecurity=70;
+  G.jobSecuritySeasonStart=70;
   G.contractYear=3;
   G.firedData=null;
-  // Generate new starter roster for new team
+  G.roster=genTeamRoster(newTeam,10).map((p,i)=>ensureSeasonLog({...p,id:p.id||`gen_${newTeam.replace(/\s+/g,'_')}_${i}`,team:newTeam}));
   fillRosterTo15();
   autoLineup();
-  addNews('🏀 '+G.coachName+' takes over as head coach at '+newTeam,'ng');
+  if(midseasonTakeover){
+    G.portal=[];
+    G.portalLog=[];
+    startSeason();
+  }
+  addNews('🏀 '+G.coachName+' takes over as head coach at '+teamLabel(newTeam),'ng');
   toast('Welcome to '+teamLabel(newTeam)+'!','to');
   updateTopBar();
   saveGame();
@@ -5031,7 +5392,7 @@ function renderHome(){
       const jsPct=s.jobSecurity||80;
       const jsColor=jsPct>=60?'var(--green3)':jsPct>=40?'var(--gold3)':'var(--red3)';
       el.innerHTML=`<div class="sl-tag">Save ${i+1} · ${(s.diff||'easy').toUpperCase()}</div>
-        <div class="sl-team" style="color:${tc(s.team)};filter:saturate(.88) brightness(1.18)">${teamLabel(s.team)}</div>
+        <div class="sl-team" style="color:${tc(s.team)};filter:saturate(.88) brightness(1.18)">${s.teamLabel||teamLabel(s.team)}</div>
         <div class="sl-meta">Year ${s.dyYear||1} · ${s.wins||0}-${s.losses||0} · ${slotTitles} title${slotTitles!==1?'s':''}</div>
         <div style="font-size:.62rem;color:${jsColor};margin-top:.1rem">Job Security: ${jsPct}%</div>
         <button class="sl-del" onclick="event.stopPropagation();delSv('${s.id}')">✕</button>`;
@@ -5066,7 +5427,7 @@ function renderHomeRight(saves){
       <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.65rem">
         ${teamLogoBadge(latest.team,40)}
         <div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;color:var(--navy)">${teamLabel(latest.team)}</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;color:var(--navy)">${latest.teamLabel||teamLabel(latest.team)}</div>
           <div style="font-size:.63rem;color:var(--tx3)">${confLabel(latest.conf)||''} · Year ${latest.dyYear||1} · ${(latest.diff||'easy').toUpperCase()}</div>
         </div>
       </div>
@@ -5088,7 +5449,7 @@ function renderHomeRight(saves){
       <div style="font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;margin-bottom:.55rem;font-weight:700">All Saves</div>
       ${saves.map(s=>`<div style="display:flex;align-items:center;gap:.5rem;padding:.35rem 0;border-bottom:1px solid var(--br);cursor:pointer" onclick="loadAndContinue('${s.id}')">
         ${teamLogoBadge(s.team,20)}
-        <div style="flex:1"><div style="font-size:.77rem;font-weight:600;color:var(--navy)">${teamLabel(s.team)}</div>
+        <div style="flex:1"><div style="font-size:.77rem;font-weight:600;color:var(--navy)">${s.teamLabel||teamLabel(s.team)}</div>
         <div style="font-size:.62rem;color:var(--tx3)">Yr ${s.dyYear||1} · ${s.wins||0}-${s.losses||0}</div></div>
         <span class="pill pn" style="font-size:.58rem">${(s.diff||'easy').toUpperCase()}</span>
       </div>`).join('')}
@@ -5115,7 +5476,7 @@ function renderHomeRight(saves){
       ${newsItems.map(n=>`<div class="news-item ${n.cls}" style="margin-bottom:.3rem">${n.msg}</div>`).join('')}
       ${saves.length?`<div style="margin-top:.65rem;border-top:1px solid var(--br);padding-top:.55rem">
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:.65rem;color:var(--tx3);text-transform:uppercase;margin-bottom:.3rem;font-weight:700">Your Dynasties</div>
-        ${saves.map(s=>`<div class="news-item nb" style="margin-bottom:.25rem;font-size:.72rem">📊 <strong>${teamLabel(s.team)}</strong> — Yr ${s.dyYear||1}, ${s.wins||0} wins${s.titles?' · 🏆 '+s.titles:''}</div>`).join('')}
+        ${saves.map(s=>`<div class="news-item nb" style="margin-bottom:.25rem;font-size:.72rem">📊 <strong>${s.teamLabel||teamLabel(s.team)}</strong> — Yr ${s.dyYear||1}, ${s.wins||0} wins${s.titles?' · 🏆 '+s.titles:''}</div>`).join('')}
       </div>`:''}
     </div>`;
   hr.innerHTML=`
@@ -5145,7 +5506,8 @@ function renderHomeRight(saves){
           Hoops Legacy is an independent basketball simulation and is not affiliated with, endorsed by, or sponsored by any university, athletic conference, or governing body. All school, conference, and other trademarks are the property of their respective owners and are used for descriptive purposes only.
         </div>
       </div>
-    </div>`;
+    </div>
+    <div style="font-size:.64rem;color:var(--tx4);margin-top:1rem;text-align:center">© 2026 Jake Barkin. All rights reserved.</div>`;
 }
 window.loadAndContinue=function(id){
   if(loadGame(id)){launchHud();}else{toast('Could not load save','tl');}

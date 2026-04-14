@@ -63,7 +63,7 @@ body[data-theme='dark']{
 .save-slot .sl-tag{font-family:'Barlow Condensed',sans-serif;font-size:.63rem;letter-spacing:2px;color:rgba(255,255,255,.3);text-transform:uppercase;margin-bottom:.15rem}
 .save-slot .sl-team{font-family:'Barlow Condensed',sans-serif;font-size:1.05rem;font-weight:800;letter-spacing:1px;color:#f6f8ff;text-shadow:-1px 0 rgba(9,13,24,.72),0 1px rgba(9,13,24,.72),1px 0 rgba(9,13,24,.72),0 -1px rgba(9,13,24,.72),0 1px 10px rgba(0,0,0,.28)}
 .save-slot .sl-meta{font-size:.7rem;color:rgba(236,241,255,.72)}
-.save-slot.empty .sl-team{color:rgba(214,223,246,.82);font-family:Georgia,'Times New Roman',serif;font-size:.8rem;font-weight:500;letter-spacing:.75px;text-shadow:-1px 0 rgba(255,255,255,.84),0 1px rgba(255,255,255,.84),1px 0 rgba(255,255,255,.84),0 -1px rgba(255,255,255,.84)}
+.save-slot.empty .sl-team{color:rgba(214,223,246,.84);font-family:Georgia,'Times New Roman',serif;font-size:.8rem;font-weight:500;letter-spacing:.75px;text-shadow:0 0 4px rgba(255,255,255,.78)}
 .save-slot .sl-del{position:absolute;top:.6rem;right:.65rem;background:transparent;border:none;color:rgba(255,255,255,.3);cursor:pointer;font-size:.8rem;padding:.12rem .28rem;border-radius:4px;transition:all .12s}
 .save-slot .sl-del:hover{color:var(--red3);background:rgba(255,255,255,.08)}
 .btn-newgame{background:var(--gold3);border:none;color:var(--navy);font-family:'Barlow Condensed',sans-serif;font-size:.95rem;letter-spacing:2px;font-weight:800;padding:.65rem 1.25rem;border-radius:8px;cursor:pointer;width:100%;transition:all .15s}
@@ -96,7 +96,7 @@ body[data-theme='dark'] .home-callout{background:linear-gradient(135deg,#121a2c,
 .home-quickcard .value{font-family:'Barlow Condensed',sans-serif;font-size:1.55rem;font-weight:900;color:var(--navy)}
 body[data-theme='dark'] .home-hero{color:var(--s0)}
 body[data-theme='dark'] .hl-main,body[data-theme='dark'] .save-slot .sl-team,body[data-theme='dark'] .home-hero h2{color:#fff}
-body[data-theme='dark'] .save-slot.empty .sl-team{color:rgba(226,234,250,.98);text-shadow:-1px 0 rgba(255,255,255,.96),0 1px rgba(255,255,255,.96),1px 0 rgba(255,255,255,.96),0 -1px rgba(255,255,255,.96),0 0 6px rgba(12,18,32,.32)}
+body[data-theme='dark'] .save-slot.empty .sl-team{color:rgba(226,234,250,.98);text-shadow:0 0 5px rgba(255,255,255,.88)}
 body[data-theme='dark'] .save-slot .sl-meta,
 body[data-theme='dark'] .hl-sub,
 body[data-theme='dark'] .home-saves-label,
@@ -416,7 +416,7 @@ body[data-theme='dark'] .round64-board .round64-region-title{color:#162945 !impo
 .ni-t{font-size:.62rem;color:var(--tx3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;margin-bottom:.05rem}
 
 /* ── ROSTER PLAYER ROW ── */
-.rp-row{background:var(--s0);border:1px solid var(--br);border-radius:9px;padding:.58rem .85rem;display:flex;align-items:center;gap:.6rem;margin-bottom:.32rem;transition:all .12s;cursor:pointer;box-shadow:var(--shadow)}
+.rp-row{background:var(--s0);border:1px solid var(--br);border-radius:9px;padding:.58rem .85rem;display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:.32rem;transition:all .12s;cursor:pointer;box-shadow:var(--shadow)}
 .rp-row:hover{border-color:var(--navy);box-shadow:var(--shadow2)}
 .rp-row.starter{border-left:3px solid var(--gold2)}
 .rp-row.rotation{border-left:3px solid var(--blue2)}
@@ -2550,7 +2550,7 @@ function buildNCAA(){
     const margin=(s.pf||68)-(s.pa||67);
     const auto=autoBids.includes(t)?7:0;
     const bubbleBoost=((s.cw-s.cl)>=2&&ctWins>=2)?1.8:0;
-    const generatedPenalty=isGeneratedTeam(t)?(autoBids.includes(t)?10.5:18.5):0;
+    const generatedPenalty=isGeneratedTeam(t)?Math.max(4,((autoBids.includes(t)?11.5:16.5)-winPct*9-ctWins*1.4)):0;
     return{t,score:pres(t)*3.2+winPct*24+s.cw*0.55+margin*0.25+ct+auto+bubbleBoost+Math.random()*1.5-generatedPenalty};
   }).sort((a,b)=>b.score-a.score);
   const autoSet=new Set(autoBids);

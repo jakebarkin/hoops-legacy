@@ -1137,6 +1137,7 @@ function registerSeasonSnapshot(p,team,extra={}){
 function normalizeGameState(state){
   const merged={...baseGameState(),...state};
   merged.teamRatingsMap=merged.teamRatingsMap||{};
+  merged.customCoaches=merged.customCoaches||{};
   merged.selectionSeedReveal=merged.selectionSeedReveal||null;
   merged.selectionBuilt=merged.selectionBuilt||!!merged.mmData;
   merged.selectionSundayDone=merged.selectionSundayDone||!!merged.mmData;
@@ -1291,6 +1292,7 @@ window.setTheme=function(theme){applyTheme(theme);};
 function baseGameState(){
   return{
   sid:uid(),diff:'easy',coachName:'',team:null,conf:null,pres:0,
+  customCoaches:{},
   nilBudget:0,nilSpent:0,nilBonus:0,
   roster:[],pending:[],pool:[],aiCommits:{},
   portal:[],portalLog:[],portalOpen:false,
@@ -1644,9 +1646,17 @@ function autoLineup(){
   act.forEach((p,i)=>{
     p.role=i<5?'starter':i<9?'rotation':'bench';
     p.minPref=i<5?32:i<9?10:2;
+    p.lineupOrder=i;
   });
-  G.roster.filter(p=>p.redshirt).forEach(p=>p.role='bench');
+  G.roster.filter(p=>p.redshirt).forEach((p,i)=>{p.role='bench';p.lineupOrder=100+i;});
   enforceMinuteTargets(false);
+}
+function activeRotationOrder(){
+  return [...G.roster].filter(p=>!p.redshirt).sort((a,b)=>(a.lineupOrder??999)-(b.lineupOrder??999)||b.ovr-a.ovr);
+}
+function refreshRotationViews(){
+  if(G.tab==='roster') rRoster();
+  if(G.tab==='dash') rDash();
 }
 
 function addNews(msg,cls){
@@ -2535,7 +2545,7 @@ function genAwards(){
     poy:scored[0],dpoy,aa1:scored.slice(0,5),aa2:scored.slice(5,10),
     frosh:all.filter(p=>p.yr==='Fr').sort((a,b)=>b.ovr-a.ovr).slice(0,5),
     coy:{team:coyTeam,isUser:isUserCoy,record:G.wins+'-'+G.losses,
-      name:isUserCoy?(G.coachName||'Head Coach'):rname()+' (Head Coach)'},
+      name:isUserCoy?(G.coachName||'Head Coach'):coachNameForTeam(coyTeam)},
   };
   const addAcc=(name,label)=>{
     const p=G.roster.find(x=>x.name===name);
@@ -2580,7 +2590,7 @@ function buildConferenceAwards(){
     secondTeam:scored.slice(5,10),
     allFreshman:[...leaguePlayers].filter(p=>p.yr==='Fr').sort((a,b)=>b.ovr-a.ovr).slice(0,5),
     firstTeam:scored.slice(0,5),
-    coy:{team:coyTeam,name:coyTeam===G.team?(G.coachName||'Head Coach'):rname()+' (Head Coach)',record:`${leaders[0]?.cw||0}-${leaders[0]?.cl||0}`},
+    coy:{team:coyTeam,name:coyTeam===G.team?(G.coachName||'Head Coach'):coachNameForTeam(coyTeam),record:`${leaders[0]?.cw||0}-${leaders[0]?.cl||0}`},
   };
   const addAcc=(name,label)=>{
     const p=G.roster.find(x=>x.name===name);
@@ -2607,27 +2617,92 @@ function confAwardCard(p,label,icon){
   const action=p.team===G.team&&p.id?`openProfile('${p.id}')`:`openScoutedPlayer('${(p.name||'').replace(/'/g,"\\'")}','${(p.team||'').replace(/'/g,"\\'")}','${p.pos||'SG'}','${p.yr||'So'}',${p.ovr||74},${p.ppg||0},${p.rpg||0},${p.apg||0},'${label.replace(/'/g,"\\'")}')`;
   return `<div class="aw-card" style="cursor:pointer" onclick="${action}"><div class="aw-ico">${icon}</div><div><div class="aw-lbl">${label}</div><div class="aw-win">${p.name}</div><div class="aw-tm">${teamLabel(p.team)} · ${p.pos||''}${p.ppg!=null?` · ${p.ppg} PPG`:''}</div></div></div>`;
 }
+function teamRecordForCoachCard(team){
+  if(team===G.team) return `${G.wins||0}-${G.losses||0}`;
+  const s=G.confStands?.[team]||{};
+  return `${s.w||0}-${s.l||0}`;
+}
+function coachProfileStats(team,name){
+  const isUserCoach=(team||G.team)===G.team && (name||'')===(G.coachName||'');
+  const hist=isUserCoach
+    ? {
+        natChamps:G.teamHistory?.natChamps||0,
+        confChamps:G.teamHistory?.confChamps||0,
+        tourns:G.teamHistory?.tourns||0
+      }
+    : getTeamHistory(team||G.team);
+  const hasStartedCareer=isUserCoach?(((G.wins||0)+(G.losses||0))>0||(G.history||[]).length>0):true;
+  const seasons=isUserCoach
+    ? (hasStartedCareer?Math.max(1,G.dyYear||1):0)
+    : Math.max(1,Math.min(18,Math.round((hist.tourns||8)/1.7)));
+  const currentRecord=teamRecordForCoachCard(team||G.team);
+  const [curWins,curLosses]=currentRecord.split('-').map(x=>parseInt(x,10)||0);
+  const careerWins=isUserCoach
+    ? (G.history||[]).reduce((sum,h)=>sum+(parseInt((h.record||'0-0').split('-')[0],10)||0),0)+(hasStartedCareer?curWins:0)
+    : Math.max(curWins, Math.round(hist.tourns*2.4 + hist.confChamps*3.2 + hist.natChamps*8 + seasons*17));
+  const careerLosses=isUserCoach
+    ? (G.history||[]).reduce((sum,h)=>sum+(parseInt((h.record||'0-0').split('-')[1],10)||0),0)+(hasStartedCareer?curLosses:0)
+    : Math.max(curLosses, Math.round(careerWins*0.42));
+  const finalFours=isUserCoach
+    ? (G.history||[]).filter(h=>/Final Four|National Champion|Championship Game/.test(h.ncaaResult||'')).length
+    : Math.max(hist.natChamps||0,Math.round((hist.tourns||0)*0.18));
+  return{
+    isUserCoach,
+    seasons,
+    currentRecord,
+    careerWins,
+    careerLosses,
+    natTitles:hist.natChamps||0,
+    confTitles:hist.confChamps||0,
+    tourns:hist.tourns||0,
+    finalFours
+  };
+}
 window.openCoachProfile=function(name,team,record,scope){
-  const isUserCoach=(name||'')===(G.coachName||'');
-  const coachHist=isUserCoach?getTeamHistory(team||G.team):null;
-  const coachTitles=(coachHist?.natChamps||0);
-  const confTitles=(coachHist?.confChamps||0);
-  const coachAccolades=isUserCoach?(G.coachAccolades||[]):[];
-  const coyCount=(G.history||[]).filter(h=>h.record&&h.record.startsWith(`${G.wins}-`)===false).length;
+  const stats=coachProfileStats(team||G.team,name||coachNameForTeam(team||G.team));
+  const coachAccolades=stats.isUserCoach?(G.coachAccolades||[]):[];
   mOpen(name||'Head Coach',`
     <div class="card">
       <div style="display:flex;align-items:center;gap:.7rem;margin-bottom:.75rem">${coachAvatar(name,44)}<div><div style="font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:900;color:var(--navy)">${name||'Head Coach'}</div>
       <div style="font-size:.78rem;color:var(--tx2)">${scope||'Coach of the Year'} · ${teamLabel(team||'—')}</div></div></div>
       <div class="g2">
         <div class="sc"><div class="sv" style="font-size:1.05rem">${teamLabel(team||'—')}</div><div class="sl">Program</div></div>
-        <div class="sc"><div class="sv" style="font-size:1.05rem">${record||'—'}</div><div class="sl">Record</div></div>
-        ${isUserCoach?`<div class="sc"><div class="sv" style="font-size:1.05rem">${coachTitles}</div><div class="sl">National Titles</div></div>
-        <div class="sc"><div class="sv" style="font-size:1.05rem">${confTitles}</div><div class="sl">Conference Titles</div></div>`:''}
+        <div class="sc"><div class="sv" style="font-size:1.05rem">${record||stats.currentRecord}</div><div class="sl">This Season</div></div>
+        <div class="sc"><div class="sv" style="font-size:1.05rem">${stats.seasons}</div><div class="sl">Seasons</div></div>
+        <div class="sc"><div class="sv" style="font-size:1.05rem">${stats.careerWins}-${stats.careerLosses}</div><div class="sl">Career Record</div></div>
+      </div>
+      <div class="g2" style="margin-top:.6rem">
+        <div class="sc"><div class="sv" style="font-size:1.05rem">${stats.natTitles}</div><div class="sl">National Titles</div></div>
+        <div class="sc"><div class="sv" style="font-size:1.05rem">${stats.confTitles}</div><div class="sl">Conference Titles</div></div>
+        <div class="sc"><div class="sv" style="font-size:1.05rem">${stats.finalFours}</div><div class="sl">Final Fours</div></div>
+        <div class="sc"><div class="sv" style="font-size:1.05rem">${stats.tourns}</div><div class="sl">Tournament Trips</div></div>
       </div>
       ${coachAccolades.length?`<div style="font-size:.74rem;color:var(--gold);margin-top:.65rem">${coachAccolades.join(' · ')}</div>`:''}
-      ${isUserCoach?`<div style="font-size:.74rem;color:var(--gold);margin-top:.7rem">${G.coachName||'Coach'} is credited in program history, awards, and championship pages.</div>`:''}
+      ${stats.isUserCoach?`<div style="font-size:.74rem;color:var(--gold);margin-top:.7rem">${G.coachName||'Coach'} is credited in program history, awards, and championship pages.</div>`:''}
     </div>
   `);
+};
+const coachNameForTeam=team=>{
+  if(!team) return 'Head Coach';
+  if(team===G.team) return G.coachName||'Head Coach';
+  G.customCoaches=G.customCoaches||{};
+  if(!G.customCoaches[team]) G.customCoaches[team]=rname();
+  return G.customCoaches[team];
+};
+window.renameTeamCoach=function(team){
+  if(!team) return;
+  const current=coachNameForTeam(team);
+  const next=prompt(`Edit ${team} coach name:`,current);
+  if(!next||!next.trim()) return;
+  if(team===G.team) G.coachName=next.trim();
+  else{
+    G.customCoaches=G.customCoaches||{};
+    G.customCoaches[team]=next.trim();
+  }
+  saveGame();
+  updateTopBar();
+  toast('Coach name updated','to');
+  showTeamInfo(team);
 };
 function getConfTourneyFinish(){
   if(!G.ctData) return 'Not started';
@@ -2952,6 +3027,7 @@ function renderSplash(){
       <div class="tc-badge" style="background:transparent;border:none;box-shadow:none;width:auto;height:auto">${teamLogoBadge(t,42)}</div>
       <div class="tc-name">${teamLabel(t)}</div>
       <div class="tc-conf">${confLabel(c)}</div>
+      <div style="font-size:.62rem;color:var(--tx3);margin-top:.16rem">HC: <span style="cursor:pointer;text-decoration:underline;text-underline-offset:2px" onclick="event.stopPropagation();openCoachProfile('${coachNameForTeam(t).replace(/'/g,"\\'")}','${t.replace(/'/g,"\\'")}',teamRecordForCoachCard('${t.replace(/'/g,"\\'")}'),'Team Selection')">${coachNameForTeam(t)}</span></div>
       <div class="tc-stars">${'★'.repeat(pres(t))}${'☆'.repeat(5-pres(t))}</div>
       <div class="tc-nil">NIL: $${(nilBase(t)/1e6).toFixed(1)}M/yr</div>
     </div>`).join('');
@@ -3408,7 +3484,8 @@ window.retireJersey=function(id){
 ==================================================== */
 function rRoster(){
   const c=document.getElementById('content');
-  const act=G.roster.filter(p=>!p.redshirt);
+  const orderedAct=activeRotationOrder();
+  const act=orderedAct;
   const rs=G.roster.filter(p=>p.redshirt);
   const inj=G.roster.filter(p=>p.injStatus);
   const isPortal=G.phase==='preseason'||G.portalOpen===true;
@@ -3427,7 +3504,7 @@ function rRoster(){
   ${['starter','rotation','bench'].map(role=>{
     const label={starter:'Starters',rotation:'Rotation',bench:'Bench'}[role];
     const color={starter:'var(--gold2)',rotation:'var(--blue)',bench:'var(--tx3)'}[role];
-    const players=G.roster.filter(p=>p.role===role&&!p.redshirt).sort((a,b)=>b.ovr-a.ovr);
+    const players=orderedAct.filter(p=>p.role===role);
     if(!players.length) return'';
     return`<div style="font-family:\"Barlow Condensed\",sans-serif;font-size:.72rem;letter-spacing:2px;color:${color};text-transform:uppercase;margin:.65rem 0 .35rem;font-weight:700;border-left:3px solid ${color};padding-left:.5rem">${label} (${players.length})</div>
     ${players.map(p=>`<div class="rp-row ${p.role}" onclick="openProfile('${p.id}')">
@@ -3481,15 +3558,14 @@ window.toggleRS=function(id){
 };
 window.openLineup=function(){
   const adjustedPreview=[...G.roster].filter(p=>!p.redshirt).reduce((s,p)=>s+(p.minPref||0),0)!==200;
-  const order=[...G.roster].sort((a,b)=>{
-    const ra={starter:0,rotation:1,bench:2}[a.role]??2;
-    const rb={starter:0,rotation:1,bench:2}[b.role]??2;
-    return ra-rb||b.ovr-a.ovr;
-  });
-  const totalMins=order.reduce((s,p)=>s+(p.minPref||0),0);
+  const actOrder=activeRotationOrder();
+  const redshirts=[...G.roster].filter(p=>p.redshirt).sort((a,b)=>(a.lineupOrder??999)-(b.lineupOrder??999)||b.ovr-a.ovr);
+  const order=[...actOrder,...redshirts];
+  const totalMins=actOrder.reduce((s,p)=>s+(p.minPref||0),0);
   const sys=currentSystem();
   mOpen('Rotation & Roles',`
     <div style="font-size:.78rem;color:var(--tx2);margin-bottom:.55rem">Set your rotation, assign minutes out of 200 total team minutes, and choose how your team plays.</div>
+    <div style="font-size:.7rem;color:var(--blue);margin-bottom:.55rem;font-weight:700">Move buttons change the real lineup order. Slot numbers update immediately and carry into the roster screen.</div>
     <div class="card2" style="margin-bottom:.7rem">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:.75rem;flex-wrap:wrap">
         <div class="coach-scheme-card"><strong>Coaching System:</strong> ${sys.name}<div style="font-size:.7rem;color:var(--tx3)">${sys.desc}</div></div>
@@ -3497,32 +3573,33 @@ window.openLineup=function(){
       </div>
       <div style="font-size:.72rem;color:${totalMins===200?'var(--green2)':'var(--gold)'};margin-top:.45rem">Assigned Minutes: ${totalMins}/200${adjustedPreview?' · will auto-adjust if you leave it this way':''}</div>
     </div>
-    ${order.map(p=>`<div class="rb-row" style="grid-template-columns:42px 1fr 70px 110px 88px 120px">
+    ${order.map((p,idx)=>`<div class="rb-row" style="grid-template-columns:52px 42px 1fr 70px 110px 88px 162px">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:.68rem;font-weight:800;color:${p.redshirt?'var(--tx3)':idx<5?'var(--gold)':'var(--blue)'}">${p.redshirt?'RS':`#${idx+1}`}</div>
       <div>${playerAvatar(p,28)}</div>
       <div style="cursor:pointer" onclick="openProfile('${p.id}')"><div style="font-weight:600">${p.name}</div><div style="font-size:.64rem;color:var(--tx3)">${p.pos} · ${p.yr}</div></div>
       <div><span class="ob ${p.ovr>=88?'oelite':p.ovr>=78?'ohigh':p.ovr>=68?'omid':'olow'}">${p.ovr}</span></div>
       <div><span class="pill ${p.role==='starter'?'po':p.role==='rotation'?'pb':'pn'}">${p.role}</span></div>
       <div><input type="number" min="0" max="40" value="${p.minPref||0}" onchange="setPlayerMinutes('${p.id}',this.value)" style="width:62px;padding:.2rem .3rem;border:1px solid var(--br2);border-radius:6px"> <span style="font-size:.65rem;color:var(--tx3)">min</span></div>
       <div style="display:flex;gap:.25rem;justify-content:flex-end">
-        <button class="btn bo" style="font-size:.62rem;padding:.16rem .35rem" onclick="moveLineup('${p.id}',-1)">↑</button>
-        <button class="btn bo" style="font-size:.62rem;padding:.16rem .35rem" onclick="moveLineup('${p.id}',1)">↓</button>
+        ${p.redshirt?'':`<button class="btn bo" style="font-size:.62rem;padding:.16rem .42rem;font-weight:800" onclick="moveLineup('${p.id}',-1)">Move Up ↑</button>
+        <button class="btn bo" style="font-size:.62rem;padding:.16rem .42rem;font-weight:800" onclick="moveLineup('${p.id}',1)">Move Down ↓</button>`}
       </div>
     </div>`).join('')}
   `);
 };
 window.moveLineup=function(id,dir){
-  const order=[...G.roster].sort((a,b)=>{
-    const ra={starter:0,rotation:1,bench:2}[a.role]??2;
-    const rb={starter:0,rotation:1,bench:2}[b.role]??2;
-    return ra-rb||b.ovr-a.ovr;
-  });
+  const order=activeRotationOrder();
   const idx=order.findIndex(p=>p.id===id);
   const ni=clamp(idx+dir,0,order.length-1);
   if(idx===-1||idx===ni) return;
   const [p]=order.splice(idx,1);
   order.splice(ni,0,p);
-  order.forEach((pl,i)=>{pl.role=i<5?'starter':i<9?'rotation':'bench';});
+  order.forEach((pl,i)=>{pl.role=i<5?'starter':i<9?'rotation':'bench';pl.lineupOrder=i;});
+  const redshirts=G.roster.filter(p=>p.redshirt);
+  redshirts.forEach((pl,i)=>{pl.lineupOrder=100+i;});
+  G.roster=[...order,...redshirts];
   saveGame();
+  refreshRotationViews();
   openLineup();
 };
 window.setPlayerMinutes=function(id,val){
@@ -3530,6 +3607,7 @@ window.setPlayerMinutes=function(id,val){
   if(!p) return;
   p.minPref=clamp(parseInt(val,10)||0,0,40);
   saveGame();
+  refreshRotationViews();
   openLineup();
 };
 window.setCoachSystem=function(key){
@@ -5079,6 +5157,7 @@ window.showTeamInfo=function(teamName){
   const p=pres(teamName);
   const s=G.confStands[teamName];
   const conf=confOf(teamName);
+  const coachName=coachNameForTeam(teamName);
   const w=s?s.w:ri(5,20);
   const l=s?s.l:ri(2,15);
   const cw=s?s.cw:ri(1,8);
@@ -5124,7 +5203,16 @@ window.showTeamInfo=function(teamName){
       <button class="btn bg" onclick="openGeneratedRosterEditor('${teamName.replace(/'/g,"\\'")}')">Edit Players</button>
     </div>
     <div style="font-size:.75rem;color:var(--tx2);margin-bottom:.85rem;font-style:italic">"${hist.notable}"</div>
-    <div style="font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;margin-bottom:.35rem;font-weight:700">Projected Roster</div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;margin-bottom:.35rem;font-weight:700">Coach & Roster</div>
+    <div class="card2" style="padding:.55rem .65rem;display:flex;align-items:center;gap:.55rem;margin-bottom:.55rem">
+      <div style="cursor:pointer" onclick="openCoachProfile('${coachName.replace(/'/g,"\\'")}','${teamName.replace(/'/g,"\\'")}',teamRecordForCoachCard('${teamName.replace(/'/g,"\\'")}'),'Team Profile')">${coachAvatar(coachName,30)}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.76rem;font-weight:800;color:var(--navy);cursor:pointer;text-decoration:underline;text-underline-offset:2px" onclick="openCoachProfile('${coachName.replace(/'/g,"\\'")}','${teamName.replace(/'/g,"\\'")}',teamRecordForCoachCard('${teamName.replace(/'/g,"\\'")}'),'Team Profile')">${coachName}</div>
+        <div style="font-size:.64rem;color:var(--tx3)">Head Coach</div>
+      </div>
+      <button class="btn bo" style="font-size:.64rem;padding:.16rem .45rem" onclick="renameTeamCoach('${teamName.replace(/'/g,"\\'")}')">Edit Coach</button>
+    </div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;margin-bottom:.35rem;font-weight:700">Projected Roster</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:.35rem;margin-bottom:.85rem">
       ${rosterView.map(p=>`<div class="card2" style="padding:.45rem;display:flex;align-items:center;gap:.45rem;cursor:pointer" onclick="openScoutedPlayer('${p.name.replace(/'/g,"\\'")}','${teamName.replace(/'/g,"\\'")}','${p.pos}','${p.yr}',${p.ovr},${p.pts},${p.reb},${p.ast},'', '${(p.id||'').replace(/'/g,"\\'")}')">${playerAvatar(p,28)}<div style="flex:1;min-width:0"><div style="font-size:.72rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</div><div style="font-size:.62rem;color:var(--tx3)">${p.pos} · ${p.yr} · ${p.height}</div></div><span class="ob ${p.ovr>=88?'oelite':p.ovr>=78?'ohigh':p.ovr>=68?'omid':'olow'}">${p.ovr}</span></div>`).join('')}
     </div>

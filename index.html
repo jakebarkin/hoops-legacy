@@ -117,8 +117,8 @@ body[data-theme='dark'] .sl,
 body[data-theme='dark'] .hsg-lbl{color:var(--tx2)}
 body[data-theme='dark'] .nt{color:#c5d0ef}
 body[data-theme='dark'] .nt.on{color:#fff}
-.jnum{display:inline-flex;align-items:center;justify-content:center;min-width:2.15rem;padding:.14rem .42rem;border-radius:999px;background:linear-gradient(135deg,var(--navy),var(--navy3));border:1px solid rgba(255,255,255,.18);font-family:'Barlow Condensed',sans-serif;font-size:.68rem;font-weight:900;letter-spacing:1px;color:#fff;box-shadow:0 4px 10px rgba(0,0,0,.12)}
-.jnum.sm{min-width:1.8rem;padding:.1rem .32rem;font-size:.61rem}
+.jnum{display:inline-flex;align-items:center;justify-content:center;min-width:2.28rem;padding:.16rem .46rem;border-radius:999px;background:linear-gradient(135deg,var(--navy),var(--navy3));border:1px solid rgba(255,255,255,.18);font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:900;letter-spacing:1.15px;color:#fff;box-shadow:0 4px 10px rgba(0,0,0,.12)}
+.jnum.sm{min-width:1.96rem;padding:.12rem .36rem;font-size:.66rem;letter-spacing:1px}
 body[data-theme='dark'] .jnum{background:linear-gradient(135deg,#edf3ff,#cddaf7);border-color:rgba(205,218,247,.45);color:#13203a}
 .impact-pill{display:inline-flex;align-items:center;gap:.18rem;padding:.14rem .38rem;border-radius:999px;background:linear-gradient(135deg,#f7d978,#d49a16);border:1px solid rgba(149,95,0,.2);font-size:.56rem;color:#1c1c1c;font-family:'Barlow Condensed',sans-serif;letter-spacing:1.1px;font-weight:900;white-space:nowrap;box-shadow:0 4px 10px rgba(212,154,22,.18)}
 body[data-theme='dark'] .impact-pill{background:linear-gradient(135deg,#ffe39a,#f2bf43);border-color:rgba(255,227,154,.55);color:#13203a;box-shadow:0 6px 14px rgba(0,0,0,.22)}
@@ -546,7 +546,11 @@ body[data-theme='dark'] .round64-board .round64-region-title{color:#162945 !impo
   .nav-bar{padding:0 .35rem}
   .nt{padding:.58rem .72rem;font-size:.75rem}
   .team-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem}
-  .t-card{padding:.72rem}
+  .t-card{padding:.8rem .72rem;display:flex;flex-direction:column;align-items:center;text-align:center;min-height:168px}
+  .t-card .tc-badge{margin:0 auto .5rem;display:flex;align-items:center;justify-content:center}
+  .t-card .tc-name,.t-card .tc-conf,.t-card .tc-stars,.t-card .tc-nil{width:100%;text-align:center}
+  #splash-attachment-home{display:none}
+  #splash-attachment-mobile{display:block;margin-top:.8rem}
   .home-hero{padding:1.25rem}
   .home-hero h2{font-size:1.35rem}
   .home-callout{padding:1rem}
@@ -561,6 +565,21 @@ body[data-theme='dark'] .round64-board .round64-region-title{color:#162945 !impo
   .prof-header{flex-wrap:wrap;align-items:flex-start}
   .prof-ovr{margin-left:0}
   .stat-grid{grid-template-columns:1fr 1fr}
+  .rotation-card{padding:.72rem .75rem}
+  .rotation-card .rb-row.mobile-vertical{display:grid !important;grid-template-columns:44px 1fr auto !important;gap:.45rem .6rem;align-items:center}
+  .rotation-card .rb-row.mobile-vertical .rot-slot{grid-column:1;grid-row:1}
+  .rotation-card .rb-row.mobile-vertical .rot-avatar{grid-column:1;grid-row:2}
+  .rotation-card .rb-row.mobile-vertical .rot-main{grid-column:2;grid-row:1 / span 2;min-width:0}
+  .rotation-card .rb-row.mobile-vertical .rot-ovr{grid-column:3;grid-row:1;justify-self:end}
+  .rotation-card .rb-row.mobile-vertical .rot-role{grid-column:3;grid-row:2;justify-self:end}
+  .rotation-card .rb-row.mobile-vertical .rot-actions{grid-column:1 / span 3;grid-row:3;display:grid !important;grid-template-columns:1fr 1fr;gap:.35rem;width:100%;margin-top:.15rem}
+  .rotation-card .rb-row.mobile-vertical .rot-actions .btn{width:100%;padding:.42rem .35rem;font-size:.68rem}
+  .rotation-card .rotation-slider-wrap{grid-template-columns:1fr 52px !important;gap:.6rem !important}
+  .rotation-card .rotation-minutes{font-size:.94rem}
+  .jnum,.jnum.sm{font-size:.72rem;min-width:2.02rem}
+  .mobile-tip{font-size:.72rem;line-height:1.45}
+  .rp-row{padding:.82rem .75rem}
+  .rp-row .btn{margin-left:0;width:100%;justify-content:center}
 }
 @media(max-width:560px){
   #home-right-content{height:auto !important}
@@ -571,7 +590,7 @@ body[data-theme='dark'] .round64-board .round64-region-title{color:#162945 !impo
   .home-right,.splash-right,.content{padding:.7rem}
   .splash-title{font-size:1.3rem}
   .team-grid{grid-template-columns:1fr 1fr}
-  .t-card .tc-name{font-size:.82rem}
+  .t-card .tc-name{font-size:.84rem}
   .t-card .tc-conf,.t-card .tc-nil{font-size:.6rem}
   .cb-chip{font-size:.72rem;padding:.46rem .86rem;border-radius:14px}
   .tb-name{font-size:1rem;letter-spacing:1px}
@@ -607,7 +626,13 @@ body[data-theme='dark'] .round64-board .round64-region-title{color:#162945 !impo
   .bracket-col{min-width:104px}
   .live-hdr{padding:.7rem}
   .live-feed{max-height:170px}
+  .t-card{min-height:0}
+  .rotation-card .rb-row.mobile-vertical{grid-template-columns:40px 1fr !important}
+  .rotation-card .rb-row.mobile-vertical .rot-ovr{grid-column:1;grid-row:3;justify-self:start}
+  .rotation-card .rb-row.mobile-vertical .rot-role{grid-column:2;grid-row:3;justify-self:start}
+  .rotation-card .rb-row.mobile-vertical .rot-actions{grid-column:1 / span 2}
 }
+#splash-attachment-mobile{display:none}
 </style>
 </head>
 <body data-theme="light">
@@ -673,7 +698,9 @@ body[data-theme='dark'] .round64-board .round64-region-title{color:#162945 !impo
     <div class="diff-opt di" data-d="impossible" onclick="selDiff(this)">
       <div class="do-name">IMPOSSIBLE</div>
       <div class="do-desc"><strong>Extreme challenge.</strong> Recruiting is brutal, job security is fragile, and thin rosters get exposed quickly. A title here should feel rare and hard-earned.</div></div>
-    <div id="splash-attachment" style="margin-top:1rem"></div>
+    <div id="splash-attachment-home" style="margin-top:1rem">
+      <div id="splash-attachment"></div>
+    </div>
     <div style="margin-top:auto;padding-top:1rem">
       
     </div>
@@ -683,6 +710,7 @@ body[data-theme='dark'] .round64-board .round64-region-title{color:#162945 !impo
     <div style="font-size:.68rem;color:var(--tx3);letter-spacing:2px;text-transform:uppercase;margin-bottom:.85rem">Select a school to begin your dynasty</div>
     <div class="conf-bar" id="conf-bar"></div>
     <div class="team-grid" id="team-grid"></div>
+    <div id="splash-attachment-mobile"></div>
   </div>
 </div>
 
@@ -3399,17 +3427,22 @@ function renderSplash(){
   const confs=['All',...Object.keys(CONFS)];
   let active='All';
   const splashAttach=document.getElementById('splash-attachment');
-  if(splashAttach){
-    splashAttach.innerHTML=`<div class="card" style="margin-bottom:1rem">
+  const mobileAttach=document.getElementById('splash-attachment-mobile');
+  const attachmentMarkup=(inputId)=>`<div class="card" style="margin-bottom:1rem">
       <div style="font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;color:var(--tx3);text-transform:uppercase;margin-bottom:.5rem;font-weight:700">Attachment File</div>
       <div style="font-size:.73rem;color:var(--tx2);margin-bottom:.5rem">Load an attachment before picking your team if you want the alternate real-name/team-branding version.</div>
-      <textarea id="splash-attachment-pack-input" placeholder="Paste attachment JSON here" style="width:100%;min-height:110px;padding:.7rem .8rem;border:1px solid var(--br2);border-radius:10px;background:var(--s0);color:var(--tx);font-size:.72rem;line-height:1.45;resize:vertical"></textarea>
+      <textarea id="${inputId}" placeholder="Paste attachment JSON here" style="width:100%;min-height:110px;padding:.7rem .8rem;border:1px solid var(--br2);border-radius:10px;background:var(--s0);color:var(--tx);font-size:.72rem;line-height:1.45;resize:vertical"></textarea>
       <div style="display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.65rem">
-        <button class="btn bg" onclick="importAttachmentPackFromSplash()">Load Attachment</button>
+        <button class="btn bg" onclick="importAttachmentPackFromSplash('${inputId}')">Load Attachment</button>
         <button class="btn bo" onclick="clearAttachmentPack()">Clear Attachment</button>
       </div>
       <div style="font-size:.68rem;color:var(--tx3);margin-top:.5rem">${BRANDING_PACK?`Active attachment: <strong>${BRANDING_PACK.name}</strong>`:'No attachment file loaded.'}</div>
-    </div><div class="mobile-tip">Mobile note: landscape mode gives the cleanest conference chips, team cards, brackets, and roster views.</div>`;
+    </div><div class="mobile-tip">Mobile note: this build is tuned for straight-up vertical play first. Team picking, roster control, and game flow should all work comfortably without rotating your phone.</div>`;
+  if(splashAttach){
+    splashAttach.innerHTML=attachmentMarkup('splash-attachment-pack-input');
+  }
+  if(mobileAttach){
+    mobileAttach.innerHTML=attachmentMarkup('splash-attachment-pack-input-mobile');
   }
   function rg(){
     bar.innerHTML=confs.map(c=>`<div class="cb-chip${c===active?' on':''}" onclick="setSC('${c}')">${c==='All'?'All':confLabel(c)}</div>`).join('');
@@ -3432,6 +3465,7 @@ function renderSplash(){
   window.refreshSplashTeams=rg;
   rg();
 }
+window.addEventListener('resize',()=>{if(document.getElementById('splash')?.classList.contains('on')) renderSplash();});
 window.selDiff=function(el){document.querySelectorAll('.diff-opt').forEach(d=>d.classList.remove('sel'));el.classList.add('sel');};
 window.pickT=function(team,conf){
   const sel=document.querySelector('.diff-opt.sel');
@@ -3441,10 +3475,10 @@ window.pickT=function(team,conf){
     roster:[],pending:[],pool:[],aiCommits:{},
     portal:[],portalLog:[],
     schedule:[],wins:0,losses:0,cw:0,cl:0,confStands:{},
-    phase:'season',year:2026,dyYear:1,
+    phase:'preseason',year:2026,dyYear:1,
     ctData:null,mmData:null,champ:null,awards:null,
     history:[],news:[],allOvr:{},osDec:null,
-    tab:'dash',
+    tab:'schedule',
   });
   G.roster=Array.from({length:12},(_,i)=>{
     const yrs=['Fr','Fr','Fr','So','So','So','Jr','Jr','Jr','Sr','Sr','Sr'];
@@ -3458,6 +3492,9 @@ window.pickT=function(team,conf){
   G.coachName=(cn&&cn.trim())?cn.trim():'The Coach';
   ALL_TEAMS.filter(t=>t!==team).forEach(t=>{G.allOvr[t]=clamp(58+pres(t)*5+ri(-4,4),58,96);});
   buildPool();startSeason();
+  G.phase='preseason';
+  G.tab='schedule';
+  addNews('🗓️ Before your first game, lock in up to 3 non-conference matchups or start the season when you are ready.','nb');
   show('splash',false);launchHud();
 };
 
@@ -3753,8 +3790,8 @@ window.importAttachmentPack=function(){
   refreshVisibleView();
   toast((pack.name||'Attachment file')+' loaded','to');
 };
-window.importAttachmentPackFromSplash=function(){
-  const input=document.getElementById('splash-attachment-pack-input');
+window.importAttachmentPackFromSplash=function(inputId='splash-attachment-pack-input'){
+  const input=document.getElementById(inputId)||document.getElementById('splash-attachment-pack-input')||document.getElementById('splash-attachment-pack-input-mobile');
   const raw=(input?.value||'').trim();
   if(!raw){toast('Paste the attachment file contents first','tl');return;}
   let parsed;
@@ -3936,7 +3973,7 @@ function rRoster(){
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:2px;color:var(--navy);text-transform:uppercase;font-weight:900">Interactive Roster Hub</div>
         <div style="font-size:.76rem;color:var(--tx2)">Tap a player to open the profile, edit the name or jersey, release them, or redshirt them. Use the lineup screen to drag minutes and reorder the rotation.</div>
       </div>
-      <div class="mobile-tip">On mobile, turning your phone sideways gives the cleanest roster and stat-table view.</div>
+      <div class="mobile-tip">Built for vertical mobile play: tap player rows, use the lineup sliders, and let the cards stack naturally instead of forcing landscape.</div>
     </div>
   </div>
   <div class="g4" style="margin-bottom:.85rem">
@@ -4021,6 +4058,7 @@ window.openLineup=function(){
   const order=[...actOrder,...redshirts];
   const totalMins=actOrder.reduce((s,p)=>s+(p.minPref||0),0);
   const sys=currentSystem();
+  const mobileVertical=window.innerWidth<=760;
   mOpen('Rotation & Roles',`
     <div class="mobile-tip" style="margin-bottom:.55rem">Set your rotation, drag minutes to shape the lineup, and keep the total at 200 team minutes. The game will auto-balance the rest if you push one player higher.</div>
     <div style="font-size:.7rem;color:var(--blue);margin-bottom:.55rem;font-weight:700">Move buttons change the real lineup order. Slot numbers update immediately and carry into the roster screen.</div>
@@ -4032,18 +4070,18 @@ window.openLineup=function(){
       <div style="font-size:.72rem;color:${totalMins===200?'var(--green2)':'var(--gold)'};margin-top:.45rem">Assigned Minutes: ${totalMins}/200${adjustedPreview?' · will auto-adjust if you leave it this way':''}</div>
     </div>
     ${order.map((p,idx)=>`<div class="rotation-card" style="margin-bottom:.45rem">
-      <div class="rb-row" style="grid-template-columns:52px 42px 1fr 70px 110px 162px;border-bottom:none;padding:0;background:transparent">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:.68rem;font-weight:800;color:${p.redshirt?'var(--tx3)':idx<5?'var(--gold)':'var(--blue)'}">${p.redshirt?'RS':`#${idx+1}`}</div>
-      <div>${playerAvatar(p,28)}</div>
-      <div style="cursor:pointer" onclick="openProfile('${p.id}')"><div style="font-weight:600">${p.name}</div><div style="font-size:.64rem;color:var(--tx3);display:flex;align-items:center;gap:.35rem;flex-wrap:wrap"><span class="jnum sm">#${p.jerseyNo??'—'}</span><span>${p.pos} · ${p.yr}</span></div></div>
-      <div><span class="ob ${p.ovr>=88?'oelite':p.ovr>=78?'ohigh':p.ovr>=68?'omid':'olow'}">${p.ovr}</span></div>
-      <div><span class="pill ${p.role==='starter'?'po':p.role==='rotation'?'pb':'pn'}">${p.role}</span></div>
-      <div style="display:flex;gap:.25rem;justify-content:flex-end">
+      <div class="rb-row${mobileVertical?' mobile-vertical':''}" style="${mobileVertical?'grid-template-columns:44px 1fr auto;':'grid-template-columns:52px 42px 1fr 70px 110px 162px;'}border-bottom:none;padding:0;background:transparent">
+      <div class="rot-slot" style="font-family:'Barlow Condensed',sans-serif;font-size:.68rem;font-weight:800;color:${p.redshirt?'var(--tx3)':idx<5?'var(--gold)':'var(--blue)'}">${p.redshirt?'RS':`#${idx+1}`}</div>
+      <div class="rot-avatar">${playerAvatar(p,28)}</div>
+      <div class="rot-main" style="cursor:pointer" onclick="openProfile('${p.id}')"><div style="font-weight:600">${p.name}</div><div style="font-size:.64rem;color:var(--tx3);display:flex;align-items:center;gap:.35rem;flex-wrap:wrap"><span class="jnum sm">#${p.jerseyNo??'—'}</span><span>${p.pos} · ${p.yr}</span></div></div>
+      <div class="rot-ovr"><span class="ob ${p.ovr>=88?'oelite':p.ovr>=78?'ohigh':p.ovr>=68?'omid':'olow'}">${p.ovr}</span></div>
+      <div class="rot-role"><span class="pill ${p.role==='starter'?'po':p.role==='rotation'?'pb':'pn'}">${p.role}</span></div>
+      <div class="rot-actions" style="display:flex;gap:.25rem;justify-content:flex-end">
         ${p.redshirt?'':`<button class="btn bo" style="font-size:.62rem;padding:.16rem .42rem;font-weight:800" onclick="moveLineup('${p.id}',-1)">Move Up ↑</button>
         <button class="btn bo" style="font-size:.62rem;padding:.16rem .42rem;font-weight:800" onclick="moveLineup('${p.id}',1)">Move Down ↓</button>`}
       </div>
       </div>
-      ${p.redshirt?'':`<div style="display:grid;grid-template-columns:1fr auto;gap:.75rem;align-items:center;margin-top:.45rem">
+      ${p.redshirt?'':`<div class="rotation-slider-wrap" style="display:grid;grid-template-columns:1fr auto;gap:.75rem;align-items:center;margin-top:.45rem">
         <input class="rotation-slider" type="range" min="0" max="40" step="1" value="${p.minPref||0}" oninput="previewPlayerMinutes('${p.id}',this.value)" onchange="setPlayerMinutes('${p.id}',this.value)">
         <span class="rotation-minutes" id="rpm-${p.id}">${p.minPref||0}m</span>
       </div>`}
@@ -4114,6 +4152,7 @@ function rSched(){
   const rem=G.schedule.filter(g=>!g.played).length;
   c.innerHTML=`<div class="sh">Schedule ${G.year-1}–${G.year}</div>
   <div class="ss">${G.wins}-${G.losses} · ${rem} games remaining</div>
+  ${G.phase==='preseason'?`<div class="card" style="margin-bottom:.75rem"><div style="font-size:.78rem;color:var(--tx2);margin-bottom:.5rem">Preseason setup: lock in your non-conference slate before the opener. Once you start the season, those custom games are final.</div><div class="brow"><button class="btn bb" onclick="openCustomSchedule()">Pick 3 Non-Conference Games</button><button class="btn bg" onclick="startSeason();updateTopBar();switchTab('schedule')">▶ Start Season</button></div></div>`:''}
   ${(G.phase==='season'&&G.wins+G.losses===0&&!(G.customNC||[]).length)?`<div class="card" style="margin-bottom:.75rem"><div style="font-size:.76rem;color:var(--tx2);margin-bottom:.5rem">Before the first game, you can still customize 3 non-conference matchups near the start of the season.</div><button class="btn bb" onclick="openCustomSchedule()">Pick 3 Non-Conference Games</button></div>`:''}
   ${(G.phase==='season'&&G.wins+G.losses===0&&(G.customNC||[]).length)?`<div class="card" style="margin-bottom:.75rem"><div style="font-size:.76rem;color:var(--tx2);margin-bottom:.45rem">Your non-conference schedule is finalized for this season.</div><div style="display:flex;gap:.35rem;flex-wrap:wrap">${(G.customNC||[]).map(g=>`<span class="pill pn">${teamLabel(g.opp)} · ${(g.site||'home')==='neutral'?'Neutral':(g.site==='away'?'Away':'Home')}</span>`).join('')}</div></div>`:''}
   ${G.phase==='season'&&rem>0?`<div class="brow">
@@ -4122,7 +4161,7 @@ function rSched(){
     <button class="btn bo" onclick="sAll()">⏭ Sim All</button>
     <button class="btn bo" onclick="advanceToNextEvent()">Advance to Next Event</button>
   </div>`:''}
-  ${G.phase==='season-done'||G.phase!=='season'?`<div class="card" style="margin-bottom:.75rem"><div style="font-size:.78rem;color:var(--tx2)">Regular season complete. Head to the postseason when you're ready.</div></div>`:''}
+  ${(G.phase==='season-done')?`<div class="card" style="margin-bottom:.75rem"><div style="font-size:.78rem;color:var(--tx2)">Regular season complete. Head to the postseason when you're ready.</div></div>`:''}
   <div>
   ${G.schedule.map((g,i)=>{
     const oppLabel=formatRankedTeam(g.opp);
@@ -6230,7 +6269,7 @@ function renderHomeRight(saves){
         <div class="card" style="font-size:.67rem;color:var(--tx3);line-height:1.45">
           Hoops Legacy is an independent basketball simulation and is not affiliated with, endorsed by, or sponsored by any university, athletic conference, or governing body. All school, conference, and other trademarks are the property of their respective owners and are used for descriptive purposes only.
         </div>
-        <div class="mobile-tip">Mobile works best in landscape for brackets, roster management, and full stat tables.</div>
+        <div class="mobile-tip">Mobile is tuned for vertical play first. Brackets, roster management, and tab flow should all stay usable while holding your phone straight.</div>
       </div>
     </div>
     <div style="font-size:.64rem;color:var(--tx4);margin-top:1rem;text-align:center">© 2026 Jake Barkin. All rights reserved.</div>`;
